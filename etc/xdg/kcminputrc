@@ -1,0 +1,10 @@
+[Libinput][0][0][Cypress APA Trackpad (cyapa)]
+NaturalScroll=true
+TapToClick=true
+
+[Libinput][1739][33381][SYNA3064:00 06CB:8265 Touchpad]
+NaturalScroll=true
+TapToClick=true
+
+[Mouse]
+cursorTheme=breeze_cursors
