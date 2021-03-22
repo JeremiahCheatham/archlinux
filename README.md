@@ -42,7 +42,7 @@ If you would like to see a list keyboard use this command.
 
     # ls /usr/share/kbd/keymaps/**/*.map.gz
 
-### Set keyboard keymap.
+### Set keyboard keymap
 Here is an example of setting the keyboard to the UK keymap.
 
     # loadkeys uk
@@ -79,7 +79,7 @@ Edit the device with fdisk. Replace X with the device letter you are willing to 
 
     # fdisk /dev/sdX
 
-## Format partitions.
+## Format partitions
 ### Format EFI/boot partitoin
 Replace /dev/sdX1 with the EFI partition.
 
@@ -95,7 +95,7 @@ Replace /dev/sdX3 with system partition.
 
     # mkfs.ext4 /dev/sdX3
 
-## Mount partitions.
+## Mount partitions
 
     # mount /dev/sdX3 /mnt
     # mkdir /mnt/efi
@@ -123,28 +123,62 @@ Generate for your new system.
 
     # genfstab -U /mnt >> /mnt/etc/fstab
 
-chroot
+## Configure system in chroot environment
+### Chroot
+Use arch-chroot to change roots into new system.
 
     # arch-chroot /mnt
-    
-    # sed -i 's/#en_GB.UTF-8/en_GB.UTF-8/' /etc/locale.gen
+
+### Select Locale
+Uncomment your locale by removing the # infront of your locale. English UK is "en_GB.UTF-8".
+
+    # nano /etc/locale.gen
+
+### Generate locale
+
     # locale-gen
+
+### Enable sudo for wheel
+We will allow users who are part of the wheel group sudo privilage.
 
     # sed -i 's/# %wheel ALL=(ALL) NOPASSWD/%wheel ALL=(ALL) NOPASSWD/' /etc/sudoers
 
+### Set keymap
+We will set the keymap for the new systme. Replace "uk" with your keymap.
+
     # echo "KEYMAP=uk" > /etc/vconsole.conf
+
+### Install grub
+Install grub into the EFI partion with the command below.
+
+    # grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/efi
+
+### Configure grub
+Grub will automatically create the Arch Linux boot options.
+
+    # grub-mkconfig -o /boot/grub/grub.cfg
+
+### Create hostname
+You will need to choose a name that this machine will be called on the network.
+An example would me "Chromebook". Replace NAME with your chosen hostname.
+    # echo NAME > /etc/hostname
+
+### Create hosts
+We also need to create a host file. Replace NAME with your chosen hostname in each command below.
+
+    # echo "127.0.0.1       localhost" > /etc/hosts
+
+    # echo "::1             localhost" >> /etc/hosts
+    # echo "127.0.0.1       $MYNAME.localdomain $MYNAME" >> /etc/hosts
+
+
     # echo "setxkbmap gb" > /usr/share/sddm/scripts/Xsetup
 
     # sed -i 's/Adwaita/breeze_cursors/' /usr/share/icons/default/index.theme
 
-    # grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/efi
-    # grub-mkconfig -o /boot/grub/grub.cfg
-    
-    # echo $MYNAME > /etc/hostname
 
-    # echo "127.0.0.1       localhost" > /etc/hosts
-    # echo "::1             localhost" >> /etc/hosts
-    # echo "127.0.0.1       $MYNAME.localdomain $MYNAME" >> /etc/hosts
+    
+
     
     # useradd -m $MYNAME -G wheel
     # passwd $MYNAME
