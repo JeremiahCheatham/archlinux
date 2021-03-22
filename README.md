@@ -160,32 +160,55 @@ Grub will automatically create the Arch Linux boot options.
 
 ### Create hostname
 You will need to choose a name that this machine will be called on the network.
-An example would me "Chromebook". Replace NAME with your chosen hostname.
-    # echo NAME > /etc/hostname
+An example would me "Chromebook". Replace MYHOST with your chosen hostname.
+
+    # echo MYHOST > /etc/hostname
 
 ### Create hosts
-We also need to create a host file. Replace NAME with your chosen hostname in each command below.
+We also need to create a hosts file. All 3 lines below create the hosts file.
 
     # echo "127.0.0.1       localhost" > /etc/hosts
 
     # echo "::1             localhost" >> /etc/hosts
-    # echo "127.0.0.1       $MYNAME.localdomain $MYNAME" >> /etc/hosts
 
+Replace (both) MYHOST with your chosen hostname in the command below.
+
+    # echo "127.0.0.1       MYHOST.localdomain MYHOST" >> /etc/hosts
+
+### Create a user
+We need to create a new user with sudo privialges. Replace MYUSER below with your desired new user name.
+
+    # useradd -m MYUSER -G wheel
+
+Give your new user a password.
+
+    # passwd MYUSER
+
+### Create root password
+Give the root user password too.
+
+    # passwd
+
+### Set keymap for SDDM
+The KDE login manager SDDM will need it's own keymap setting. For example gb for United Kingdom.
 
     # echo "setxkbmap gb" > /usr/share/sddm/scripts/Xsetup
 
+### Fix KDE fallback cursor
+KDE will sometimes fallback to the Adwaita cursor. Change the default to breeze.
+
     # sed -i 's/Adwaita/breeze_cursors/' /usr/share/icons/default/index.theme
 
+### Boot into new Arch Linux
+We need to exit the chroot environment.
 
-    
+    # exit
 
-    
-    # useradd -m $MYNAME -G wheel
-    # passwd $MYNAME
-    
-    # passwd
-    
-reboot
+Now we need to reboot into the new Arch Linux system. Be sure to remove the USB at shutdown and let it boot into the new system.
+
+    # reboot
+
+## Finale configuration
 
     # timedatectl set-timezone Europe/London
     # timedatectl set-ntp true
