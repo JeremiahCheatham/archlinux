@@ -286,4 +286,4 @@ We will use the pip command to pull and install the development version without 
 Please remember that this development version seems to require the `def update()` with `pass` or any other code in it to update the screen. 
 Without this projects from the books will not display if you have not added the update call.
 
-    # pip install git+https://github.com/lordmauve/pgzero.git --no-deps --upgrade
+    # sudo pip install git+https://github.com/lordmauve/pgzero.git --no-deps --upgrade
