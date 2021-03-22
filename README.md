@@ -1,35 +1,37 @@
 # Arch Linux Installation Guide.
 ## Overview
-This guide will walk you through the steps needed to install a fully functional archlinux desktop system.
-Both x86_64 and raspberry pi will be covered. The focus is KDE, but steps for XFCE will also be shown.
-I use an install script to help me remember and automate most of the steps. There are also some config and skel files included.
-I also recomend using the official Arch Linux install guide for support. I often find answers to my problems hiden there.
+This guide will walk you through the steps needed to install a fully functional Arch Linux Desktop.
+The focus is KDE, but steps for XFCE will also be shown.
+I use an install script to help me remember and automate most of the steps.
+There are also some config and skel files included.
+I also recomend using the official Arch Linux install guide for support.
+I often find answers to my problems hiden there.
 
 https://wiki.archlinux.org/index.php/Installation_guide
 
-## Intel & AMD Download and bootable USB
+## Download and bootable USB
 ### Download ISO image
-The download for the latest Archlinux ISO can be found here. https://archlinux.org/download/
+The official Arch Linux download page. https://archlinux.org/download/
 
-This is a direct link to a mirror with the latest image. https://mirrors.edge.kernel.org/archlinux/iso/latest/
+A direct link to a mirror with the latest image. https://mirrors.edge.kernel.org/archlinux/iso/latest/
 
 ### Create bootable USB
+WARNING! All data on the USB device will be perminantly lost.
+WARNING! Be sure to check device size and mount points to make sure it is your USB.
 To find the name of your USB device. Use the command lsblk.
 
     # lsblk
 
-All data on the USB in all partitions will be lost.
 Be sure to know the name of your USB. `/dev/sdX` where X is the letter of your USB.
 Be careful it is not your hard drive or ssd.
-The partition `part /` is the device with your system partition. Be careful!
-Check the size of the device and where the partitions if any are mounted.
+The partition `part /` is the device with your system partition.
 
 We will use the cat command to write the image to the USB. Change directiory to where ever you downloaded the file.
 
     # cd ~/Downloads
     # cat archlinux-*-x86_64.iso > /dev/sdX
 
-## Intel & AMD Installation
+## Installation
 You will need to boot your system from the USB drive. It may simply need to reboot with the USB left in.
 You most likely need to know how to tell your bios to boot from USB devices.
 It may be something like pressing `escape`, `F5`, `F8`, `F10` or `F11` during bootup. Search your device and boot from USB.
@@ -42,8 +44,8 @@ Here is an example of setting the keyboard to the UK keymap.
 
     # loadkeys uk
 
-### Setup Internet
-If you need to setup wireless internet first find the name of your wife adapter.
+### Setup Wifi
+If you need to setup wireless internet first find the name of your wife ADAPTER.
 
     # iwctl device list | grep station | cut -f 3 -d " "
 
@@ -52,7 +54,8 @@ Replace ADAPTER and SSID below with there names. You will be promptered for a pa
 
     # iwctl station ADAPTER connect SSID
 
-If that was successful or you have a wired connection lets check if you're online.
+### Check Wifi or Wired connection
+Lets check if you're online.
 
     # ping archlinux.org
 
@@ -81,6 +84,7 @@ Edit the device with fdisk. Replace X with the device letter you are willing to 
     # mount /dev/sdX1 /mnt/efi
 
     # reflector
+    # pacman -Syy
     
     # pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim pacman-contrib htop base-devel xorg-server mesa-demos plasma plasma-wayland-session kde-applications pulseaudio-bluetooth chromium firefox python-pygame python-numpy python-wheel python-pip python-language-server ctags git
     
