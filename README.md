@@ -31,25 +31,30 @@ We will use the cat command to write the image to the USB. Change directiory to 
     # cd ~/Downloads
     # cat archlinux-*-x86_64.iso > /dev/sdX
 
-## Installation
+# Installation
 You will need to boot your system from the USB drive. It may simply need to reboot with the USB left in.
 You most likely need to know how to tell your bios to boot from USB devices.
 It may be something like pressing `escape`, `F5`, `F8`, `F10` or `F11` during bootup. Search your device and boot from USB.
-### Set keyboard
-If you are using a US keyboard you can skip this step. If you would like to see a list keyboard use this command.
+## Setup keyboard
+If you are using a US keyboard you can skip this step.
+### List available keyboard maps
+If you would like to see a list keyboard use this command.
 
     # ls /usr/share/kbd/keymaps/**/*.map.gz
 
-Here is an example of setting the keyboard to the UK keymap.
+### Set keyboard keymap.
+Here is an example of setting the keykoard to the UK keymap.
 
     # loadkeys uk
 
-### Setup Wifi
+## Setup Internet Connection
+### List Wifi adapter
 If you need to setup wireless internet first find the name of your wife ADAPTER.
 
     # iwctl device list | grep station | cut -f 3 -d " "
 
 This will be your ADAPTER name. The name of your network is your SSID.
+### Connect Wifi to internet
 Replace ADAPTER and SSID below with there names. You will be promptered for a password to your SSID.
 
     # iwctl station ADAPTER connect SSID
@@ -59,11 +64,11 @@ Lets check if you're online.
 
     # ping archlinux.org
 
-Update the system clock.
+### Update the system clock
 
     # timedatectl set-ntp true
 
-### Create Partitions
+## Create Partitions
 You will need to create some partitons to install archlinux on. This will perminantly destroy any data on the device.
 You have been warned. I will assume you have a device that you can create partitions on.
 Again any existing partitions will be destroyed along with all data held in them. Get a list of partitions.
@@ -74,33 +79,48 @@ Edit the device with fdisk. Replace X with the device letter you are willing to 
 
     # fdisk /dev/sdX
 
-### Format partitions.
-Format your EFI/Boot partition. Replace /dev/sdX1 with the EFI partition.
+## Format partitions.
+### Format EFI/boot partitoin
+Replace /dev/sdX1 with the EFI partition.
 
     # mkfs.fat -F32 /dev/sdX1
 
-If you made a swap partition. Replace /dev/sdx2 with swap partition.
+### If you made a swap partition
+Replace /dev/sdx2 with swap partition.
 
     # mkswap /dev/sdX2
 
-Format your system partition. Replace /dev/sdX3 with system parition.
+### Format your system partition
+Replace /dev/sdX3 with system parition.
 
     # mkfs.ext4 /dev/sdX3
 
-### Mount partitions.
+## Mount partitions.
 
     # mount /dev/sdX3 /mnt
     # mkdir /mnt/efi
     # mount /dev/sdX1 /mnt/efi
 
+## Update repository & install packages
+### Prioritize closer or faster servers
+
     # reflector
+
+### Sync pacman repository
+
     # pacman -Syy
-    
+
+### Install Arch Linux
+Use pacstrap to install the base system along with all needed packages all at once.
+
     # pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim \
     pacman-contrib htop base-devel xorg-server mesa-demos plasma plasma-wayland-session \
     kde-applications pulseaudio-bluetooth chromium firefox python-pygame python-numpy \
     python-wheel python-pip python-language-server ctags git
-    
+
+### Generate fstab
+Generate for your new system.
+
     # genfstab -U /mnt >> /mnt/etc/fstab
 
 chroot
