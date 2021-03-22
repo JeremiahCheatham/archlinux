@@ -4,8 +4,8 @@ This guide will walk you through the steps needed to install a fully functional 
 The focus is KDE, but steps for XFCE will also be shown.
 I use an install script to help me remember and automate most of the steps.
 There are also some config and skel files included.
-I also recomend using the official Arch Linux install guide for support.
-I often find answers to my problems hiden there.
+I also recommend using the official Arch Linux install guide for support.
+I often find answers to my problems hidden there.
 
 https://wiki.archlinux.org/index.php/Installation_guide
 
@@ -16,7 +16,7 @@ The official Arch Linux download page. https://archlinux.org/download/
 A direct link to a mirror with the latest image. https://mirrors.edge.kernel.org/archlinux/iso/latest/
 
 ### Create bootable USB
-WARNING! All data on the USB device will be perminantly lost.
+WARNING! All data on the USB device will be permanently lost.
 WARNING! Be sure to check device size and mount points to make sure it is your USB.
 To find the name of your USB device. Use the command lsblk.
 
@@ -26,7 +26,7 @@ Be sure to know the name of your USB. `/dev/sdX` where X is the letter of your U
 Be careful it is not your hard drive or ssd.
 The partition `part /` is the device with your system partition.
 
-We will use the cat command to write the image to the USB. Change directiory to where ever you downloaded the file.
+We will use the cat command to write the image to the USB. Change directory to where ever you downloaded the file.
 
     # cd ~/Downloads
     # cat archlinux-*-x86_64.iso > /dev/sdX
@@ -34,7 +34,7 @@ We will use the cat command to write the image to the USB. Change directiory to 
 # Installation
 You will need to boot your system from the USB drive. It may simply need to reboot with the USB left in.
 You most likely need to know how to tell your bios to boot from USB devices.
-It may be something like pressing `escape`, `F5`, `F8`, `F10` or `F11` during bootup. Search your device and boot from USB.
+It may be something like pressing `escape`, `F5`, `F8`, `F10` or `F11` during boot up. Search your device and boot from USB.
 ## Setup keyboard
 If you are using a US keyboard you can skip this step.
 ### List available keyboard maps
@@ -43,7 +43,7 @@ If you would like to see a list keyboard use this command.
     # ls /usr/share/kbd/keymaps/**/*.map.gz
 
 ### Set keyboard keymap.
-Here is an example of setting the keykoard to the UK keymap.
+Here is an example of setting the keyboard to the UK keymap.
 
     # loadkeys uk
 
@@ -55,7 +55,7 @@ If you need to setup wireless internet first find the name of your wife ADAPTER.
 
 This will be your ADAPTER name. The name of your network is your SSID.
 ### Connect Wifi to internet
-Replace ADAPTER and SSID below with there names. You will be promptered for a password to your SSID.
+Replace ADAPTER and SSID below with their names. You will be prompted for a password to your SSID.
 
     # iwctl station ADAPTER connect SSID
 
@@ -69,7 +69,7 @@ Lets check if you're online.
     # timedatectl set-ntp true
 
 ## Create Partitions
-You will need to create some partitons to install archlinux on. This will perminantly destroy any data on the device.
+You will need to create some partitions to install Arch Ainux on. This will permanently destroy any data on the device.
 You have been warned. I will assume you have a device that you can create partitions on.
 Again any existing partitions will be destroyed along with all data held in them. Get a list of partitions.
 
@@ -91,7 +91,7 @@ Replace /dev/sdx2 with swap partition.
     # mkswap /dev/sdX2
 
 ### Format your system partition
-Replace /dev/sdX3 with system parition.
+Replace /dev/sdX3 with system partition.
 
     # mkfs.ext4 /dev/sdX3
 
