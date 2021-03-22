@@ -209,15 +209,44 @@ Now we need to reboot into the new Arch Linux system. Be sure to remove the USB 
     # reboot
 
 ## Finale configuration
+### Set Time Zone
 
     # timedatectl set-timezone Europe/London
+
+### Update system clock
+
     # timedatectl set-ntp true
+
+### Set Locale
+We will make sure your locale is set. Replace en_GB.UTF-8 with your locale.
+
     # localectl set-locale LANG=en_GB.UTF-8
-    # localectl set-x11-keymap gb
+
+### Set keyboard keymap
+Double check your console keyboard is set. Replace uk with your keymap from before.
+
     # localectl set-keymap uk
-    
+
+### Set x11-keyboard
+We will set the X11 keyboad keymap. This is different from the keymap above. 
+It will be the same as the sddm keymap set earlier. Replace gb with your x11-keymap.
+
+    # localectl set-x11-keymap gb
+
+### Enable required services
+Enabling system services will start them during the next boot.
+We need to enable Network Manager to user the internet.
+
     # systemctl enable NetworkManager
+
+Enable bluetooth servie.
+
     # systemctl enable bluetooth
+
+Enabling SDDM will make the system boot to the graphical login manager for KDE.
+
     # systemctl enable sddm
-    
+
+Now it is time to reboot into your new Arch Linux system.
+
     # reboot
