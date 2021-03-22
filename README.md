@@ -247,6 +247,7 @@ Enabling SDDM will make the system boot to the graphical login manager for KDE.
 
     # systemctl enable sddm
 
+### Reboot
 Now it is time to reboot into your new Arch Linux system.
 
     # reboot
