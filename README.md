@@ -9,13 +9,13 @@ I often find answers to my problems hidden there.
 
 https://wiki.archlinux.org/index.php/Installation_guide
 
-## Download and bootable USB
+## Download and create USB
 ### Download ISO image
 The official Arch Linux download page. https://archlinux.org/download/
 
 A direct link to a mirror with the latest image. https://mirrors.edge.kernel.org/archlinux/iso/latest/
 
-### Create bootable USB
+### Create a bootable USB
 WARNING! All data on the USB device will be permanently lost.
 WARNING! Be sure to check device size and mount points to make sure it is your USB.
 To find the name of your USB device. Use the command lsblk.
@@ -37,7 +37,7 @@ You most likely need to know how to tell your bios to boot from USB devices.
 It may be something like pressing `escape`, `F5`, `F8`, `F10` or `F11` during boot up. Search your device and boot from USB.
 ## Setup keyboard
 If you are using a US keyboard you can skip this step.
-### List available keyboard maps
+### List available keyboard keymaps
 If you would like to see a list keyboard use this command.
 
     # ls /usr/share/kbd/keymaps/**/*.map.gz
@@ -81,17 +81,17 @@ Edit the device with fdisk. Replace X with the device letter you are willing to 
 
 ## Format partitions
 ### Format EFI/boot partitoin
-Replace /dev/sdX1 with the EFI partition.
+Replace /dev/sdX1 with your EFI partition.
 
     # mkfs.fat -F32 /dev/sdX1
 
-### If you made a swap partition
-Replace /dev/sdx2 with swap partition.
+### If using swap partition
+Replace /dev/sdx2 with your swap partition.
 
     # mkswap /dev/sdX2
 
 ### Format your system partition
-Replace /dev/sdX3 with system partition.
+Replace /dev/sdX3 with your system partition.
 
     # mkfs.ext4 /dev/sdX3
 
@@ -102,8 +102,8 @@ Replace /dev/sdX3 with system partition.
     # mount /dev/sdX1 /mnt/efi
 
 ## Update repository & install packages
-### Prioritize closer or faster servers
-
+### Run Reflector
+Reflector prioritizes closer or faster servers for use with pacman.
     # reflector
 
 ### Sync pacman repository
@@ -129,7 +129,7 @@ Use arch-chroot to change roots into new system.
 
     # arch-chroot /mnt
 
-### Select Locale
+### Select your Locale
 Uncomment your locale by removing the # infront of your locale. English UK is "en_GB.UTF-8".
 
     # nano /etc/locale.gen
@@ -184,15 +184,10 @@ Give your new user a password.
 
     # passwd MYUSER
 
-### Create root password
+### Create a root password
 Give the root user password too.
 
     # passwd
-
-### Set keymap for SDDM
-The KDE login manager SDDM will need it's own keymap setting. For example gb for United Kingdom.
-
-    # echo "setxkbmap gb" > /usr/share/sddm/scripts/Xsetup
 
 ### Fix KDE fallback cursor
 KDE will sometimes fallback to the Adwaita cursor. Change the default to breeze.
@@ -209,8 +204,13 @@ Now we need to reboot into the new Arch Linux system. Be sure to remove the USB 
     # reboot
 
 ## Finale configuration
-### Set Time Zone
+### Select a Time Zone
+The  command piped into more displays only a single page. Pressing enter will let you scroll though the list.
 
+    # timedatectl list-timezones | more
+
+### Set Time Zone
+Set your timezone. Replace Europe/London below with yours.
     # timedatectl set-timezone Europe/London
 
 ### Update system clock
@@ -223,15 +223,24 @@ We will make sure your locale is set. Replace en_GB.UTF-8 with your locale.
     # localectl set-locale LANG=en_GB.UTF-8
 
 ### Set keyboard keymap
-Double check your console keyboard is set. Replace uk with your keymap from before.
+Double check your console keyboard is set. Replace uk with your keymap from before. The keymap is us by default.
 
     # localectl set-keymap uk
 
-### Set x11-keyboard
-We will set the X11 keyboad keymap. This is different from the keymap above. 
-It will be the same as the sddm keymap set earlier. Replace gb with your x11-keymap.
+### See list of xll-keymap layouts
+We will set the X11 keyboad keymap. This is different from the keymap above. The x11-keymap is us by default.
+
+    # localectl list-x11-keymap-layouts
+
+### Set x11-keymap
+Replace gb with your x11-keymap. The x11-keymap is us by default.
 
     # localectl set-x11-keymap gb
+
+### Set x11-keymap for SDDM
+The KDE login manager SDDM will need it's own x11-keymap setting. Use the same x11-keymap, replacing gb below. The x11-keymap is us by default.
+
+    # echo "setxkbmap gb" > /usr/share/sddm/scripts/Xsetup
 
 ### Enable required services
 Enabling system services will start them during the next boot.
