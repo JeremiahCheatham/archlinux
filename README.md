@@ -74,10 +74,20 @@ Edit the device with fdisk. Replace X with the device letter you are willing to 
 
     # fdisk /dev/sdX
 
+### Format partitions.
+Format your EFI/Boot partition. Replace /dev/sdX1 with the EFI partition.
 
     # mkfs.fat -F32 /dev/sdX1
+
+If you made a swap partition. Replace /dev/sdx2 with swap partition.
+
     # mkswap /dev/sdX2
+
+Format your system partition. Replace /dev/sdX3 with system parition.
+
     # mkfs.ext4 /dev/sdX3
+
+### Mount partitions.
 
     # mount /dev/sdX3 /mnt
     # mkdir /mnt/efi
@@ -86,7 +96,10 @@ Edit the device with fdisk. Replace X with the device letter you are willing to 
     # reflector
     # pacman -Syy
     
-    # pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim pacman-contrib htop base-devel xorg-server mesa-demos plasma plasma-wayland-session kde-applications pulseaudio-bluetooth chromium firefox python-pygame python-numpy python-wheel python-pip python-language-server ctags git
+    # pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim \
+    pacman-contrib htop base-devel xorg-server mesa-demos plasma plasma-wayland-session \
+    kde-applications pulseaudio-bluetooth chromium firefox python-pygame python-numpy \
+    python-wheel python-pip python-language-server ctags git
     
     # genfstab -U /mnt >> /mnt/etc/fstab
 
