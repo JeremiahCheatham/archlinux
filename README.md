@@ -110,13 +110,23 @@ Reflector prioritizes closer or faster servers for use with pacman.
 
     # pacman -Syy
 
-### Install Arch Linux
-Use pacstrap to install the base system along with all needed packages all at once.
+### Install Arch Linux with KDE Plasma
+Use pacstrap to install a full KDE Plasma system all at once.
 
     # pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim \
     pacman-contrib htop base-devel xorg-server mesa-demos plasma plasma-wayland-session \
     kde-applications pulseaudio-bluetooth chromium firefox python-pygame python-numpy \
     python-wheel python-pip python-language-server ctags git
+
+### Install Arch Linux with XFCE
+Use pacstrap to install a full XFCE system all at once.
+
+    # pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim \
+    pacman-contrib htop base-devel xorg-server mesa-demos xfce xfce-goodies lightdm \
+    lightdm-gtk-greeter lightdm-gtk-greeter-settings file-roller gvfs network-manager-applet \
+    atril galculator drawing geany geany-plugins xdg-user-dirs-gtk pulseaudio pavucontrol \
+    adobe-source-sans-pro-fonts adobe-source-code-pro-fonts gnu-free-fonts ttf-hack \
+    noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-roboto
 
 ### Generate fstab
 Generate for your new system.
@@ -260,3 +270,20 @@ Enabling SDDM will make the system boot to the graphical login manager for KDE.
 Now it is time to reboot into your new Arch Linux system.
 
     # reboot
+
+# Other settings and fixes
+## Pygame Zero
+The official release is currently broken and not compatable with the latest python. 
+It also attempts to install a non working version of pygame.
+### Install Pygame with pacman
+If you haven't already installed pygame use the official Arch Linux packages.
+Numpy is also required and we will use pip too.
+
+    # sudo pacman -S --needed python-pygame python-numpy python-pip python-wheel
+
+### Install Pygame Zero
+We will use the pip command to pull and install the development version without letting it install the pygame package that is not compatable.
+Please remember that this development version seems to require the `def update()` with `pass` or any other code in it to update the screen. 
+Without this projects from the books will not display if you have not added the update call.
+
+    # pip install git+https://github.com/lordmauve/pgzero.git --no-deps --upgrade
