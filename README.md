@@ -104,6 +104,7 @@ Replace /dev/sdX3 with your system partition.
 ## Update repository & install packages
 ### Run Reflector
 Reflector prioritizes closer or faster servers for use with pacman.
+
     # reflector
 
 ### Sync pacman repository
@@ -120,6 +121,7 @@ Use pacstrap to install a full KDE Plasma system all at once.
     python-pip python-pycodestyle python-pydocstyle python-pyflakes python-pygame \
     python-pylint python-rope python-wheel yapf
 
+
 ### Install Arch Linux with XFCE
 Use pacstrap to install a full XFCE system all at once.
 
@@ -128,8 +130,11 @@ Use pacstrap to install a full XFCE system all at once.
     lightdm-gtk-greeter lightdm-gtk-greeter-settings file-roller gvfs network-manager-applet \
     atril galculator drawing geany geany-plugins xdg-user-dirs-gtk pulseaudio pavucontrol \
     adobe-source-sans-pro-fonts adobe-source-code-pro-fonts gnu-free-fonts ttf-hack \
-    noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-roboto chromium firefox python-pygame \
-    python-numpy python-wheel python-pip git
+    noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-roboto autopep8 chromium ctags firefox \
+    flake8 git hunspell-en_gb python-jedi python-language-server python-mccabe python-numpy \
+    python-pip python-pycodestyle python-pydocstyle python-pyflakes python-pygame \
+    python-pylint python-rope python-wheel yapf
+
 
 ### Generate fstab
 Generate for your new system.
@@ -290,3 +295,4 @@ Please remember that this development version seems to require the `def update()
 Without this projects from the books will not display if you have not added the update call.
 
     # sudo pip install git+https://github.com/lordmauve/pgzero.git --no-deps --upgrade
+    # sudo pip install pyfxr
