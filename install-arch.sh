@@ -6,20 +6,23 @@ echo ""
 echo "1 Set UK Keyboard and Time"
 echo "2 Connect to the Internet."
 echo "3 Format and mount partitions."
-echo "4 Install packages with pacstrap."
-echo "5 Copy install-arch.sh to /mnt/root"
+echo ""
+echo "4 Install Archlinux KDE with pacstrap."
+echo "5 Install Archlinux XFCE with pacstrap."
+echo "6 Copy install-arch.sh to /mnt/root, enter chroot."
 echo ""
 echo "In Chroot environment."
-echo "6 Set the locales."
-echo "7 Set the hostname."
-echo "8 Create a user."
-echo "9 Set root password."
+echo "7 Set the locales."
+echo "8 Set the hostname."
+echo "9 Create a user."
+echo "10 Set root password."
 echo ""
 echo "After reboot."
-echo "10 Double Check Locale Keyboard and Time."
-echo "11 Enable KDE services."
+echo "11 Double Check Locale Keyboard and Time."
+echo "12 Enable KDE services."
+echo "13 Install Pygame Zero."
 echo ""
-echo "12 Quit"
+echo "14 Quit"
 
 read CHOICE
 
@@ -66,15 +69,19 @@ if [ $CHOICE -eq 3 ]; then
                 echo "Success! /mnt/efi directory created."
                 echo "Input boot partitions like /dev/sda1"
                 read BOOTP
-                if mkfs.fat -F32 $BOOTP; then
-                    echo "Success! $BOOTP formatted."
-                    if mount $BOOTP /mnt/efi; then
-                        echo "Success! $BOOTP mounted on /mnt/efi."
+                echo "Format $BOOTP or leave intacted y/n?"
+                read BOOTPF
+                if [[ $BOOTPF = [Yy] ]]
+                    if mkfs.fat -F32 $BOOTP; then
+                        echo "Success! $BOOTP formatted."
                     else
-                        echo "Failed! $BOOTP not mounted on /mnt."
+                        echo "Failed! $BOOTP not formatted."
                     fi
+                fi
+                if mount $BOOTP /mnt/efi; then
+                    echo "Success! $BOOTP mounted on /mnt/efi."
                 else
-                    echo "Failed! $BOOTP not formatted."
+                    echo "Failed! $BOOTP not mounted on /mnt."
                 fi
             else
                 echo "Failed! /mnt/efi directory not created."
@@ -89,7 +96,7 @@ fi
 if [ $CHOICE -eq 4 ]; then
     if reflector; then
         echo "Success! Mirrors updated."
-        if pacstrap /mnt base linux-firmware linux linux-lts grub efibootmgr iwd sudo nano vim pacman-contrib htop base-devel xorg-server mesa-demos plasma plasma-wayland-session kde-applications pulseaudio-bluetooth chromium firefox python-pygame python-numpy python-wheel python-pip python-language-server ctags git; then
+        if pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim pacman-contrib htop base-devel xorg-server mesa-demos plasma plasma-wayland-session kde-applications autopep8 chromium ctags firefox flake8 git hunspell-en_gb pulseaudio-bluetooth python-jedi python-language-server python-mccabe python-numpy python-pip python-pycodestyle python-pydocstyle python-pyflakes python-pygame python-pylint python-rope python-wheel yapf; then
             echo "Success! Archlinux KDE installed."
             if genfstab -U /mnt >> /mnt/etc/fstab; then
                 echo "Success! Fstab updated."
@@ -104,6 +111,23 @@ if [ $CHOICE -eq 4 ]; then
     fi
 fi
 if [ $CHOICE -eq 5 ]; then
+    if reflector; then
+        echo "Success! Mirrors updated."
+        if pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim pacman-contrib htop base-devel xorg-server mesa-demos xfce xfce-goodies lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings file-roller gvfs network-manager-applet atril galculator drawing geany geany-plugins xdg-user-dirs-gtk pulseaudio pavucontrol adobe-source-sans-pro-fonts adobe-source-code-pro-fonts gnu-free-fonts ttf-hack noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-roboto autopep8 chromium ctags firefox flake8 git hunspell-en_gb python-jedi python-language-server python-mccabe python-numpy python-pip python-pycodestyle python-pydocstyle python-pyflakes python-pygame python-pylint python-rope python-wheel yapf; then
+            echo "Success! Archlinux XFCE installed."
+            if genfstab -U /mnt >> /mnt/etc/fstab; then
+                echo "Success! Fstab updated."
+            else
+                echo "Failed! Fstab not updated."
+            fi
+        else
+            echo "Failed! Archlinux XFCE not installed."
+        fi
+    else
+        echo "Failed! Mirrors not updated."
+    fi
+fi
+if [ $CHOICE -eq 6 ]; then
     if cp ./$(basename $0) /mnt/root; then
         echo "Success! $(basename $0) copied to /mnt/root."
         arch-chroot /mnt
@@ -111,7 +135,7 @@ if [ $CHOICE -eq 5 ]; then
         echo "Failed! $(basename $0) not copied to /mnt/root."
     fi
 fi
-if [ $CHOICE -eq 6 ]; then
+if [ $CHOICE -eq 7 ]; then
     if sed -i 's/#en_GB.UTF-8/en_GB.UTF-8/' /etc/locale.gen; then
         echo "Success! Uncommented en_GB.UTF-8 in /etc/locale.gen."
         if locale-gen; then
@@ -153,7 +177,7 @@ if [ $CHOICE -eq 6 ]; then
         echo "Failed! Couldn't uncommented en_GB.UTF-8 in /etc/locale.gen."
     fi
 fi
-if [ $CHOICE -eq 7 ]; then
+if [ $CHOICE -eq 8 ]; then
     echo "Enter your hostname."
     read MYNAME
     if echo $MYNAME > /etc/hostname; then
@@ -171,7 +195,7 @@ if [ $CHOICE -eq 7 ]; then
         echo "Failed! Couldn't set hostname."
     fi
 fi
-if [ $CHOICE -eq 8 ]; then
+if [ $CHOICE -eq 9 ]; then
     echo "Enter your user name."
     read MYNAME
     if useradd -m $MYNAME -G wheel; then
@@ -185,14 +209,14 @@ if [ $CHOICE -eq 8 ]; then
         echo "Failed! user $MYNAME was not added."
     fi
 fi
-if [ $CHOICE -eq 9 ]; then
+if [ $CHOICE -eq 10 ]; then
     if passwd; then
         echo "Success! Root password set."
     else
         echo "Failed! Root password not set."
     fi
 fi
-if [ $CHOICE -eq 10 ]; then
+if [ $CHOICE -eq 11 ]; then
     if timedatectl set-timezone Europe/London; then
         echo "Success! Europ/London Timezone set."
         if timedatectl set-ntp true; then
@@ -219,7 +243,7 @@ if [ $CHOICE -eq 10 ]; then
         echo "Failed! Europ/London Timezone not set."
     fi
 fi
-if [ $CHOICE -eq 11 ]; then
+if [ $CHOICE -eq 12 ]; then
     if systemctl enable NetworkManager; then
         echo "Success! NetworkManager enabled."
         if systemctl enable bluetooth; then
@@ -236,21 +260,21 @@ if [ $CHOICE -eq 11 ]; then
         echo "Failed! NetworkManager not enabled."
     fi
 fi
-if [ $CHOICE -eq 12 ]; then
+if [ $CHOICE -eq 13 ]; then
+    if pip install git+https://github.com/lordmauve/pgzero.git --no-deps --upgrade; then
+        echo "Success! Pygame Zero installed."
+        if pip install pyfxr; then
+            echo "Success! pyfxr module installed."
+        else
+            echo "Failed pyfxr module not installed."
+        fi
+    else
+        echo "Failed! Pygame Zero not isntalled."
+    fi
+fi
+if [ $CHOICE -eq 14 ]; then
     exit
 fi
 
 read
 ./$(basename $0) && exit
-
-# pip install git+https://github.com/lordmauve/pgzero.git --no-deps --upgrade
-
-# xfce xfce-goodies lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
-# file-roller gvfs network-manager-applet atril galculator drawing geany geany-plugins
-# xdg-user-dirs-gtk pulseaudio pavucontrol
-# adobe-source-sans-pro-fonts adobe-source-code-pro-fonts
-# gnu-free-fonts ttf-hack noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-roboto
-
-
-
-
