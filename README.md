@@ -115,8 +115,10 @@ Use pacstrap to install a full KDE Plasma system all at once.
 
     # pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim \
     pacman-contrib htop base-devel xorg-server mesa-demos plasma plasma-wayland-session \
-    kde-applications pulseaudio-bluetooth chromium firefox python-pygame python-numpy \
-    python-wheel python-pip python-language-server ctags git
+    kde-applications autopep8 chromium ctags firefox flake8 git hunspell-en_gb \
+    pulseaudio-bluetooth python-jedi python-language-server python-mccabe python-numpy \
+    python-pip python-pycodestyle python-pydocstyle python-pyflakes python-pygame \
+    python-pylint python-rope python-wheel yapf
 
 ### Install Arch Linux with XFCE
 Use pacstrap to install a full XFCE system all at once.
