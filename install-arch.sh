@@ -44,7 +44,7 @@ if [ $CHOICE -eq 1 ]; then
     fi
 fi
 if [ $CHOICE -eq 2 ]; then
-    WIFI=$( iwctl device list | grep station | cut -f 3 -d " " );
+    WIFI=$( iwctl device list | grep station | cut -f 3 -d " " )
     if [ -n "$WIFI" ]; then
         iwctl station $WIFI connect "SKY39WTW 5G"
         sleep 5
@@ -71,7 +71,7 @@ if [ $CHOICE -eq 3 ]; then
                 read BOOTP
                 echo "Format $BOOTP or leave intacted y/n?"
                 read BOOTPF
-                if [[ $BOOTPF = [Yy] ]];
+                if [ $BOOTPF = [Yy] ]; then
                     if mkfs.fat -F32 $BOOTP; then
                         echo "Success! $BOOTP formatted."
                     else
