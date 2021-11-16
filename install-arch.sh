@@ -71,7 +71,7 @@ if [ $CHOICE -eq 3 ]; then
                 read BOOTP
                 echo "Format $BOOTP or leave intacted y/n?"
                 read BOOTPF
-                if [[ $BOOTPF = [Yy] ]]
+                if [[ $BOOTPF = [Yy] ]];
                     if mkfs.fat -F32 $BOOTP; then
                         echo "Success! $BOOTP formatted."
                     else
