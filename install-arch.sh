@@ -65,6 +65,7 @@ if [ $CHOICE -eq 3 ]; then
         echo "Success! $ROOTP formatted."
         if mount $ROOTP /mnt; then
             echo "Success! $ROOTP mounted on /mnt."
+            mkdir /mnt/boot
             if mkdir /mnt/boot/efi; then
                 echo "Success! /mnt/boot/efi directory created."
                 echo "Input boot partitions like /dev/sda1"
