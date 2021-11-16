@@ -65,8 +65,8 @@ if [ $CHOICE -eq 3 ]; then
         echo "Success! $ROOTP formatted."
         if mount $ROOTP /mnt; then
             echo "Success! $ROOTP mounted on /mnt."
-            if mkdir /mnt/efi; then
-                echo "Success! /mnt/efi directory created."
+            if mkdir /mnt/boot/efi; then
+                echo "Success! /mnt/boot/efi directory created."
                 echo "Input boot partitions like /dev/sda1"
                 read BOOTP
                 echo "Format $BOOTP or leave intacted y/n?"
@@ -78,13 +78,13 @@ if [ $CHOICE -eq 3 ]; then
                         echo "Failed! $BOOTP not formatted."
                     fi
                 fi
-                if mount $BOOTP /mnt/efi; then
-                    echo "Success! $BOOTP mounted on /mnt/efi."
+                if mount $BOOTP /mnt/boot/efi; then
+                    echo "Success! $BOOTP mounted on /mnt/boot/efi."
                 else
-                    echo "Failed! $BOOTP not mounted on /mnt."
+                    echo "Failed! $BOOTP not mounted on /mnt/boot/efi."
                 fi
             else
-                echo "Failed! /mnt/efi directory not created."
+                echo "Failed! /mnt/boot/efi directory not created."
             fi
         else
             echo "Failed! $ROOTP not mounted on /mnt."
@@ -148,7 +148,7 @@ if [ $CHOICE -eq 7 ]; then
                         echo "Success! Added setxkbmap gb to /usr/share/sddm/scripts/Xsetup."
                         if sed -i 's/Adwaita/breeze_cursors/' /usr/share/icons/default/index.theme; then
                             echo "Success! Set breeze_cursors in /usr/share/icons/default/index.theme."
-                            if grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/efi; then
+                            if grub-install --target=x86_64-efi --bootloader-id=archlinux --efi-directory=/boot/efi; then
                                 echo "Success! Installed Grub."
                                 if grub-mkconfig -o /boot/grub/grub.cfg; then
                                     echo "Success! Grub Configued."
