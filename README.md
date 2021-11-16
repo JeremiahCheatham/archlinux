@@ -98,8 +98,9 @@ Replace /dev/sdX3 with your system partition.
 ## Mount partitions
 
     # mount /dev/sdX3 /mnt
-    # mkdir /mnt/efi
-    # mount /dev/sdX1 /mnt/efi
+    # mkdir /mnt/boot
+    # mkdir /mnt/boot/efi
+    # mount /dev/sdX1 /mnt/boot/efi
 
 ## Update repository & install packages
 ### Run Reflector
@@ -169,7 +170,7 @@ We will set the keymap for the new systme. Replace "uk" with your keymap.
 ### Install grub
 Install grub into the EFI partion with the command below.
 
-    # grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/efi
+    # grub-install --target=x86_64-efi --bootloader-id=archlinux --efi-directory=/boot/efi
 
 ### Configure grub
 Grub will automatically create the Arch Linux boot options.
