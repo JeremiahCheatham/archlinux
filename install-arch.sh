@@ -114,7 +114,7 @@ fi
 if [ $CHOICE -eq 5 ]; then
     if reflector; then
         echo "Success! Mirrors updated."
-        if pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim pacman-contrib htop base-devel xorg-server mesa-demos xfce xfce-goodies lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings file-roller gvfs network-manager-applet atril galculator drawing geany geany-plugins xdg-user-dirs-gtk pulseaudio pavucontrol adobe-source-sans-pro-fonts adobe-source-code-pro-fonts gnu-free-fonts ttf-hack noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-roboto autopep8 chromium ctags firefox flake8 git hunspell-en_gb python-jedi python-language-server python-mccabe python-numpy python-pip python-pycodestyle python-pydocstyle python-pyflakes python-pygame python-pylint python-rope python-wheel yapf; then
+        if pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim pacman-contrib htop base-devel xorg-server mesa-demos xfce xfce-goodies lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings file-roller gvfs network-manager-applet bluez bluez-utils blueman atril galculator drawing geany geany-plugins xdg-user-dirs-gtk pulseaudio pavucontrol adobe-source-sans-pro-fonts adobe-source-code-pro-fonts gnu-free-fonts ttf-hack noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-roboto autopep8 chromium ctags firefox flake8 git hunspell-en_gb python-jedi python-language-server python-mccabe python-numpy python-pip python-pycodestyle python-pydocstyle python-pyflakes python-pygame python-pylint python-rope python-wheel yapf; then
             echo "Success! Archlinux XFCE installed."
             if genfstab -U /mnt >> /mnt/etc/fstab; then
                 echo "Success! Fstab updated."
