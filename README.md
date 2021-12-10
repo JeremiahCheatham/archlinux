@@ -129,12 +129,12 @@ Use pacstrap to install a full XFCE system all at once.
     # pacstrap /mnt base linux-firmware linux grub efibootmgr iwd sudo nano vim \
     pacman-contrib htop base-devel xorg-server mesa-demos xfce xfce-goodies lightdm \
     lightdm-gtk-greeter lightdm-gtk-greeter-settings file-roller gvfs network-manager-applet \
-    atril galculator drawing geany geany-plugins xdg-user-dirs-gtk pulseaudio pavucontrol \
-    adobe-source-sans-pro-fonts adobe-source-code-pro-fonts gnu-free-fonts ttf-hack \
-    noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-roboto autopep8 chromium ctags firefox \
-    flake8 git hunspell-en_gb python-jedi python-language-server python-mccabe python-numpy \
-    python-pip python-pycodestyle python-pydocstyle python-pyflakes python-pygame \
-    python-pylint python-rope python-wheel yapf
+    bluez bluez-utils blueman atril galculator drawing geany geany-plugins xdg-user-dirs-gtk \
+    pulseaudio pavucontrol adobe-source-sans-pro-fonts adobe-source-code-pro-fonts \
+    gnu-free-fonts ttf-hack noto-fonts noto-fonts-emoji noto-fonts-cjk ttf-roboto autopep8 \
+    chromium ctags firefox flake8 git hunspell-en_gb python-jedi python-language-server \
+    python-mccabe python-numpy python-pip python-pycodestyle python-pydocstyle \
+    python-pyflakes python-pygame python-pylint python-rope python-wheel yapf
 
 
 ### Generate fstab
