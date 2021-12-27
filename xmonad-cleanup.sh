@@ -86,3 +86,10 @@ else
     sudo chown root 30-touchpad.conf
     sudo mv 30-touchpad.conf /etc/X11/xorg.conf.d/
 end
+
+if [ -f /usr/bin/gnome-keyring ]
+    echo "Cool gnome-keyring is already installed."
+else
+    echo "Installing gnome-keyring."
+    sudo pacman -S gnome-keyring
+end
