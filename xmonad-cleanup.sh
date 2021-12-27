@@ -45,7 +45,7 @@ end
 
 
 if grep -R "qutebrowser" ~/.xmonad/xmonad.hs > /dev/null
-    echo "Replace firefox with qutebrowser in xmonad.hs"
+    echo "Replace qutebrowser with firefox in xmonad.hs"
     sed -i 's/qutebrowser/firefox/' ~/.xmonad/xmonad.hs
 else
     echo "Cool firefox already replaced qutebrowser in xmonad.hs"
