@@ -1,3 +1,5 @@
+#!/bin/fish
+
 if [ -f /usr/bin/alsamixer ]
     echo "Cool alsa-utils is already installed."
 else
