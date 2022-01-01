@@ -36,6 +36,27 @@ else
     sed -i '/XF86AudioPlay/i\        , ("<XF86MonBrightnessDown>", spawn "light -U 5")' ~/.xmonad/xmonad.hs
 end
 
+if [ -f /usr/lib/notification-daemon-1.0/notification-daemon ]
+    echo "Cool notification-daemon is already installed."
+else
+    echo "Install notification-daemon."
+    sudo pacman -S notification-daemon
+end
+
+if grep -R "/usr/lib/notification-daemon-1.0/notification-daemon" ~/.xmonad/xmonad.hs > /dev/null
+    echo "Cool notification-daemon is already in xmonad.hs."
+else
+    echo "Adding notification-daemon to xmonad.hs"
+    sed -i '/spawnOnce "picom"/i\    spawnOnce "/usr/lib/notification-daemon-1.0/notification-daemon"' ~/.xmonad/xmonad.hs
+end
+
+if grep -R "XDG_CURRENT_DESKTOP=KDE" /etc/environment > /dev/null
+    echo "Cool XDG_CURRENT_DESKTOP=KDE is already in /etc/environment."
+else
+    echo "Adding XDG_CURRENT_DESKTOP=KDE to /etc/environment."
+    sudo bash -c "echo 'XDG_CURRENT_DESKTOP=KDE' >> /etc/environment"
+end
+
 if [ -f /usr/bin/firefox ]
     echo "Cool firefox is already installed."
 else
