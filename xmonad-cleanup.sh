@@ -43,6 +43,13 @@ else
     sudo pacman -S notification-daemon
 end
 
+if [ -f /usr/bin/haskell-language-server ]
+    echo "Cool haskell-language-server is already installed."
+else
+    echo "Install haskell-language-server."
+    sudo pacman -S haskell-language-server
+end
+
 if grep -R "/usr/lib/notification-daemon-1.0/notification-daemon" ~/.xmonad/xmonad.hs > /dev/null
     echo "Cool notification-daemon is already in xmonad.hs."
 else
@@ -63,7 +70,6 @@ else
     echo "Install firefox."
     sudo pacman -S firefox
 end
-
 
 if grep -R "qutebrowser" ~/.xmonad/xmonad.hs > /dev/null
     echo "Replace qutebrowser with firefox in xmonad.hs"
