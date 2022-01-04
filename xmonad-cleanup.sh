@@ -1,5 +1,13 @@
 #!/bin/fish
 
+# Check ParallelDownloads is enabled.
+if grep -R "^ParallelDownloads" /etc/pacman.conf > /dev/null
+    echo "Cool ParallelDownloads is already enabled."
+else
+    echo "Enabling ParallelDownloads."
+    sudo sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
+end
+
 # Check these packages are installed.
 set PACKAGES alsa-utils light notification-daemon haskell-language-server bash-language-server firefox gnome-keyring
 
