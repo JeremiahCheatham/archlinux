@@ -1,13 +1,18 @@
 #!/bin/fish
 
-if [ -f /usr/bin/alsamixer ]
-    echo "Cool alsa-utils is already installed."
-else
-    echo "Installing alsa-utils."
-    sudo pacman -S alsa-utils
+# Check these packages are installed.
+set PACKAGES alsa-utils light notification-daemon haskell-language-server bash-language-server firefox gnome-keyring
+
+for i in $PACKAGES
+    if pacman -Q $i > /dev/null 2>&1
+        echo "Cool $i is already installed."
+    else
+        echo "Installing $i."
+        sudo pacman -S $i
+    end
 end
 
-
+# You need to be in Video group for light to change screen brightness.
 if groups | grep video > /dev/null
     echo "Cool you're already in the video group."
 else
@@ -15,13 +20,7 @@ else
     sudo usermod -a -G video $USER
 end
 
-if [ -f /usr/bin/light ]
-    echo "Cool light is already installed."
-else
-    echo "Installing light."
-    sudo pacman -S light
-end
-
+# Add keybindings for screen brightness.
 if grep -R "XF86MonBrightnessUp" ~/.xmonad/xmonad.hs > /dev/null
     echo "Cool XF86MonBrightnessUp is already in xmonad.hs."
 else
@@ -36,20 +35,7 @@ else
     sed -i '/XF86AudioPlay/i\        , ("<XF86MonBrightnessDown>", spawn "light -U 5")' ~/.xmonad/xmonad.hs
 end
 
-if [ -f /usr/lib/notification-daemon-1.0/notification-daemon ]
-    echo "Cool notification-daemon is already installed."
-else
-    echo "Install notification-daemon."
-    sudo pacman -S notification-daemon
-end
-
-if [ -f /usr/bin/haskell-language-server ]
-    echo "Cool haskell-language-server is already installed."
-else
-    echo "Install haskell-language-server."
-    sudo pacman -S haskell-language-server
-end
-
+# Launch notification-daemon
 if grep -R "/usr/lib/notification-daemon-1.0/notification-daemon" ~/.xmonad/xmonad.hs > /dev/null
     echo "Cool notification-daemon is already in xmonad.hs."
 else
@@ -57,6 +43,7 @@ else
     sed -i '/spawnOnce "picom"/i\    spawnOnce "/usr/lib/notification-daemon-1.0/notification-daemon"' ~/.xmonad/xmonad.hs
 end
 
+# Let KDE/QT5 and GTK apps use the KDE theme and font.
 if grep -R "XDG_CURRENT_DESKTOP=KDE" /etc/environment > /dev/null
     echo "Cool XDG_CURRENT_DESKTOP=KDE is already in /etc/environment."
 else
@@ -64,13 +51,7 @@ else
     sudo bash -c "echo 'XDG_CURRENT_DESKTOP=KDE' >> /etc/environment"
 end
 
-if [ -f /usr/bin/firefox ]
-    echo "Cool firefox is already installed."
-else
-    echo "Install firefox."
-    sudo pacman -S firefox
-end
-
+# Make sure firefox is the default browser.
 if grep -R "qutebrowser" ~/.xmonad/xmonad.hs > /dev/null
     echo "Replace qutebrowser with firefox in xmonad.hs"
     sed -i 's/qutebrowser/firefox/' ~/.xmonad/xmonad.hs
@@ -78,10 +59,10 @@ else
     echo "Cool firefox already replaced qutebrowser in xmonad.hs"
 end
 
-
-if [ -f /usr/bin/pulseaudio ]
+# If pulse is installed add the alsa package so it mutes and unmutes correctly.
+if pacman -Q pulseaudio > /dev/null 2>&1
     echo "Pulse Audio found...."
-    if [ -f /etc/alsa/conf.d/99-pulseaudio-default.conf ]
+    if pacman -Q pulseaudio-alsa > /dev/null 2>&1
         echo "Cool pulseaudio-alsa is already installed."
     else
         echo "Installing pulseaudio-alsa."
@@ -97,7 +78,7 @@ else
     echo "Skipping pulse audio."
 end
 
-
+# Add touch pad support with tapping and NaturalScrolling.
 if [ -f /etc/X11/xorg.conf.d/30-touchpad.conf ]
     echo "Cool found /etc/X11/xorg.conf.d/30-touchpad.conf"
 else
@@ -114,9 +95,14 @@ else
     sudo mv 30-touchpad.conf /etc/X11/xorg.conf.d/
 end
 
-if [ -f /usr/bin/gnome-keyring ]
-    echo "Cool gnome-keyring is already installed."
-else
-    echo "Installing gnome-keyring."
-    sudo pacman -S gnome-keyring
+set BINS clock dtos-colorscheme dtos-help kernel memory pacupdate upt volume
+for i in $BINS
+    if [ ! -x ~/.local/bin/$i ]
+        echo "Making ~/.local/bin/$i executable."
+        chmod +x ~/.local/bin/$i
+    end
 end
+
+echo
+echo "Press SUPER + q to reload xmonad."
+echo
