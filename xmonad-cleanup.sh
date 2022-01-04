@@ -56,7 +56,7 @@ if grep -R "XDG_CURRENT_DESKTOP=KDE" /etc/environment > /dev/null
     echo "Cool XDG_CURRENT_DESKTOP=KDE is already in /etc/environment."
 else
     echo "Adding XDG_CURRENT_DESKTOP=KDE to /etc/environment."
-    sudo bash -c "echo 'XDG_CURRENT_DESKTOP=KDE' >> /etc/environment"
+    sudo fish -c "echo 'XDG_CURRENT_DESKTOP=KDE' >> /etc/environment"
 end
 
 # Make sure firefox is the default browser.
