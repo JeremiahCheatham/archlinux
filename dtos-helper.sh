@@ -53,7 +53,7 @@ if [ $CHOICE -eq 4 ]
     # Preset for 768x1366 14inch
     set NEWFONTSIZE 10
     set NEWXFONTSIZE 10
-    set CFONTSIZE1 8
+    set CFONTSIZE1 7
     set VCFONTSIZE 18
 end
 
