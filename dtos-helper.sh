@@ -208,7 +208,7 @@ if [ $CHOICE -eq 18 ] || [ $CHOICE -eq 1 ]
     end
 end
 
-if [ $CHOICE -eq 19 ] || [ $CHOICE -eq 1 ]
+if [ $CHOICE -eq 19 ] || [ $CHOICE -eq 1 ] || [ $CHOICE -eq 5 ]
     # Check bin files are executable.
     echo "Checking if ~/.local/bin/ scripts are executable."
     set BINS clock dtos-colorscheme dtos-help kernel memory pacupdate upt volume
@@ -218,6 +218,11 @@ if [ $CHOICE -eq 19 ] || [ $CHOICE -eq 1 ]
             chmod +x $HOME/.local/bin/$i
         end
     end
+    chmod +x $HOME/.config/xmobar/trayer-padding-icon.sh
+    chmod +x $HOME/.xmonad/xmonad_keys.sh
+    chmod +x $HOME/.config/sxiv/exec/key-handler
+    chmod +x $HOME/.config/qutebrowser/solarized-everything-css/release.sh
+    chmod +x $HOME/.config/dmscripts/config
 end
 
 if [ $CHOICE -eq 20 ]
