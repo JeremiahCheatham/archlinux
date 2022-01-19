@@ -1,7 +1,7 @@
 #!/bin/fish
 
 clear
-echo "   --------- DTOS Helper 1.0 ---------"
+echo "   --------- DTOS Helper 1.1 ---------"
 echo "1  Download latest DTOS Helper file."
 echo "2  Run all CONFIG & Autofix from 10 to 19."
 echo "3  1080x1920 14in Fonts + Autofix Preset."
