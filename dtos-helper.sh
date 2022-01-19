@@ -2,37 +2,40 @@
 
 clear
 echo "   --------- DTOS Helper 1.0 ---------"
-echo "1  Autofix runs 5,6,7,9,10,11,12,13,14"
-echo "2  Download latest DTOS Helper file."
+echo "1  Download latest DTOS Helper file."
+echo "2  Run all CONFIG & Autofix from 10 to 19."
 echo "3  1080x1920 14in Fonts + Autofix Preset."
 echo "4  768x1366 14in Fonts + Autofix Preset."
 echo "5  Reset DTOS from /etc/dtos folder."
-echo "   ------------- CONFIG --------------"
+echo "   -------- CONFIG & Autofix ---------"
 echo "10 Enable pacman ParallelDownloads."
 echo "11 Check needed packages are installed."
 echo "12 Create a touchpad.conf file."
-echo "13 Disable NaturalScrolling not autofix."
-echo "14 Enable Screen Backlight keys."
-echo "15 Enable notification-daemon."
-echo "16 Fix alsa with pulseaudio muting."
+echo "13 Enable Screen Backlight keys."
+echo "14 Enable notification-daemon."
+echo "15 Fix alsa with pulseaudio muting."
+echo "16 Generate KDE GTK2/3/4 theme configs."
 echo "17 Let QT & GTK use the KDE themes."
 echo "18 Make firefox the default browser."
-echo "19 Make .local/bin/ files executable."
+echo "19 Make DTOS scripts are executable."
+echo "20 Switch Adwaita to breeze_cursors."
+echo "   ---------- OTHER CONFIG -----------"
+echo "21 Disable NaturalScrolling touchpad.conf."
 echo "   -------------- FONTS --------------"
-echo "20 Increase Xmobar font size."
-echo "21 Decrease Xmobar font size."
-echo "22 Increase Conky font size."
-echo "23 Decrease Conky font size."
-echo "24 Set the Systems font size."
-echo "25 Set Systems fonts to Noto Sans & Hack"
-echo "26 Set the Console font size."
+echo "30 Increase Xmobar font size."
+echo "31 Decrease Xmobar font size."
+echo "32 Increase Conky font size."
+echo "33 Decrease Conky font size."
+echo "34 Set the Systems font size."
+echo "35 Set Systems fonts to Noto Sans & Hack"
+echo "36 Set the Console font size."
 echo "   -------------- QUIT ---------------"
-echo "30 Quit"
+echo "40 Quit"
 
 read CHOICE
 echo ""
 
-if [ $CHOICE -eq 2 ]
+if [ $CHOICE -eq 1 ]
     # Download this file.
     if curl -fLO https://raw.githubusercontent.com/JeremiahCheatham/archlinux/main/dtos-helper.sh > /dev/null 2>&1
         echo "Downloaded dtos-helper.sh successfully."
@@ -57,13 +60,38 @@ if [ $CHOICE -eq 4 ]
     set VCFONTSIZE 18
 end
 
+
+if [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
+    # Xmobar font size for presets.
+    set LINENUMBERS (grep -n pixelsize= $HOME/.config/xmobar/doom-one-xmobarrc | cut -f 1 -d ":")
+    set LGXFONTSIZE ( echo $NEWXFONTSIZE + 1 | bc )
+    sed -i "$LINENUMBERS[1] s/pixelsize=[0-9]*/pixelsize=$NEWXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
+    sed -i "$LINENUMBERS[2] s/pixelsize=[0-9]*/pixelsize=$NEWXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
+    sed -i "$LINENUMBERS[3] s/pixelsize=[0-9]*/pixelsize=$LGXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
+    sed -i "$LINENUMBERS[4] s/pixelsize=[0-9]*/pixelsize=$LGXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
+    echo "Setting font size $NEWXFONTSIZE for Xmobar."
+end
+
+if [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
+    # Conky font size for presets.
+    set LINENUMBERS ( grep -n size= $HOME/.config/conky/xmonad/doom-one-01.conkyrc | cut -f 1 -d ":" )
+    set CFONTSIZE2 (printf %.0f (echo "$CFONTSIZE1 * 3.5" | bc))
+    set CFONTSIZE3 (printf %.0f (echo "$CFONTSIZE1 * 1.5" | bc))
+    set CFONTSIZE4 (printf %.0f (echo "$CFONTSIZE1 * 1.1" | bc))
+    sed -i "$LINENUMBERS[1] s/size=[0-9]*/size=$CFONTSIZE1/" $HOME/.config/conky/xmonad/*.conkyrc
+    sed -i "$LINENUMBERS[2] s/size=[0-9]*/size=$CFONTSIZE2/" $HOME/.config/conky/xmonad/*.conkyrc
+    sed -i "$LINENUMBERS[3] s/size=[0-9]*/size=$CFONTSIZE3/" $HOME/.config/conky/xmonad/*.conkyrc
+    sed -i "$LINENUMBERS[4] s/size=[0-9]*/size=$CFONTSIZE4/" $HOME/.config/conky/xmonad/*.conkyrc
+    echo "Setting font size $CFONTSIZE1 for Conky."
+end
+
 if [ $CHOICE -eq 5 ]
     # Reset DTOS from /etc/dtos.
     echo "Resetting DTOS from /etc/dtos folder."
     /bin/cp -r /etc/dtos/.* $HOME/
 end
 
-if [ $CHOICE -eq 10 ] || [ $CHOICE -eq 1 ]
+if [ $CHOICE -eq 10 ] || [ $CHOICE -eq 2 ]
     # Check ParallelDownloads is enabled.
     if grep -R "^ParallelDownloads" /etc/pacman.conf > /dev/null
         echo "Cool ParallelDownloads is already enabled."
@@ -73,7 +101,7 @@ if [ $CHOICE -eq 10 ] || [ $CHOICE -eq 1 ]
     end
 end
 
-if [ $CHOICE -eq 11 ] || [ $CHOICE -eq 1 ]
+if [ $CHOICE -eq 11 ] || [ $CHOICE -eq 2 ]
     # Check these packages are installed.
     set PACKAGES alsa-utils light notification-daemon haskell-language-server bash-language-server firefox gnome-keyring ttf-hack noto-fonts terminus-font
     if pacman -Q $PACKAGES > /dev/null 2>&1
@@ -83,7 +111,7 @@ if [ $CHOICE -eq 11 ] || [ $CHOICE -eq 1 ]
     end
 end
 
-if [ $CHOICE -eq 12 ] || [ $CHOICE -eq 1 ]
+if [ $CHOICE -eq 12 ] || [ $CHOICE -eq 2 ]
     # Add touch pad support with tapping and NaturalScrolling.
     echo "Generate /etc/X11/xorg.conf.d/30-touchpad.conf"
     echo 'Section "InputClass"' >> 30-touchpad.conf
@@ -98,17 +126,7 @@ if [ $CHOICE -eq 12 ] || [ $CHOICE -eq 1 ]
     sudo mv 30-touchpad.conf /etc/X11/xorg.conf.d/
 end
 
-if [ $CHOICE -eq 13 ]
-    # Disable NaturalScrolling direction.
-    if [ -f /etc/X11/xorg.conf.d/30-touchpad.conf ]
-        echo "Setting NaturalScrolling to false."
-        sudo sed -i 's/"NaturalScrolling" "true"/"NaturalScrolling" "false"/' /etc/X11/xorg.conf.d/30-touchpad.conf
-    else
-        echo "TouchPad config file not found. Generate it first."
-    end
-end
-
-if [ $CHOICE -eq 14 ] || [ $CHOICE -eq 1 ]
+if [ $CHOICE -eq 13 ] || [ $CHOICE -eq 2 ]
     # Make sure light is installed.
     if pacman -Q light > /dev/null 2>&1
         echo "Cool light is already installed."
@@ -141,7 +159,7 @@ if [ $CHOICE -eq 14 ] || [ $CHOICE -eq 1 ]
     end
 end
 
-if [ $CHOICE -eq 15 ] || [ $CHOICE -eq 1 ]
+if [ $CHOICE -eq 14 ] || [ $CHOICE -eq 2 ]
     # Make sure notification-daemon is installed.
     if pacman -Q notification-daemon > /dev/null 2>&1
         echo "Cool notification-daemon is already installed."
@@ -159,7 +177,7 @@ if [ $CHOICE -eq 15 ] || [ $CHOICE -eq 1 ]
     end
 end
 
-if [ $CHOICE -eq 16 ] || [ $CHOICE -eq 1 ]
+if [ $CHOICE -eq 15 ] || [ $CHOICE -eq 2 ]
     # If pulse is installed add the alsa package so it mutes and unmutes correctly.
     if pacman -Q pulseaudio > /dev/null 2>&1
         echo "Pulse Audio found...."
@@ -180,7 +198,75 @@ if [ $CHOICE -eq 16 ] || [ $CHOICE -eq 1 ]
     end
 end
 
-if [ $CHOICE -eq 17 ] || [ $CHOICE -eq 1 ]
+if [ $CHOICE -eq 16 ] || [ $CHOICE -eq 2 ]
+    # Generate theme configs.
+
+    # Generate KDE theme config.
+    echo "Generating KDE theme config."
+    /bin/cp /usr/share/plasma/desktoptheme/breeze-dark/colors $HOME/.config/kdeglobals
+    sed -i "/\KDE\]/a LookAndFeelPackage=org.kde.breezedark.desktop" $HOME/.config/kdeglobals
+
+    # GTK 4.0 Theme ~/.config/gtk-4.0/settings.ini
+    echo "Generating GTK 4 theme config."
+    echo "[Settings]" > $HOME/.config/gtk-4.0/settings.ini
+    echo "gtk-application-prefer-dark-theme=true" >> $HOME/.config/gtk-4.0/settings.ini
+    echo "gtk-button-images=true" >> $HOME/.config/gtk-4.0/settings.ini
+    echo "gtk-cursor-theme-name=breeze_cursors" >> $HOME/.config/gtk-4.0/settings.ini
+    echo "gtk-cursor-theme-size=24" >> $HOME/.config/gtk-4.0/settings.ini
+    echo "gtk-decoration-layout=icon:minimize,maximize,close" >> $HOME/.config/gtk-4.0/settings.ini
+    echo "gtk-enable-animations=true" >> $HOME/.config/gtk-4.0/settings.ini
+    echo "gtk-font-name=Noto Sans,  10" >> $HOME/.config/gtk-4.0/settings.ini
+    echo "gtk-icon-theme-name=breeze-dark" >> $HOME/.config/gtk-4.0/settings.ini
+    echo "gtk-menu-images=true" >> $HOME/.config/gtk-4.0/settings.ini
+    echo "gtk-primary-button-warps-slider=false" >> $HOME/.config/gtk-4.0/settings.ini
+    echo "gtk-toolbar-style=3" >> $HOME/.config/gtk-4.0/settings.ini
+
+    # GTK 3.0 Theme ~/.config/gtk-3.0/settings.ini
+    echo "Generating GTK 3 theme config."
+    echo "[Settings]" > $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-application-prefer-dark-theme=true" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-button-images=true" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-cursor-theme-name=breeze_cursors" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-cursor-theme-size=24" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-decoration-layout=icon:minimize,maximize,close" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-enable-animations=true" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-font-name=Noto Sans,  10" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-icon-theme-name=breeze-dark" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-menu-images=true" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-primary-button-warps-slider=false" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-toolbar-style=3" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-modules=colorreload-gtk-module" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-theme-name=Breeze-Dark" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-enable-event-sounds=1" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-enable-input-feedback-sounds=1" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-xft-antialias=1" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-xft-hinting=1" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-xft-hintstyle=hintfull" >> $HOME/.config/gtk-3.0/settings.ini
+    echo "gtk-xft-rgba=rgb" >> $HOME/.config/gtk-3.0/settings.ini
+
+    # GTK 2.0 Theme ~/.gtkrc-2.0
+    echo "Generating GTK 2 theme config."
+    echo 'gtk-button-images=1' > $HOME/.gtkrc-2.0
+    echo 'gtk-cursor-theme-name="breeze_cursors"' >> $HOME/.gtkrc-2.0
+    echo 'gtk-cursor-theme-size=24' >> $HOME/.gtkrc-2.0
+    echo 'gtk-enable-animations=1' >> $HOME/.gtkrc-2.0
+    echo 'gtk-font-name="Noto Sans,  10"' >> $HOME/.gtkrc-2.0
+    echo 'gtk-icon-theme-name="breeze-dark"' >> $HOME/.gtkrc-2.0
+    echo 'gtk-menu-images=1' >> $HOME/.gtkrc-2.0
+    echo 'gtk-primary-button-warps-slider=0' >> $HOME/.gtkrc-2.0
+    echo 'gtk-toolbar-style=3' >> $HOME/.gtkrc-2.0
+    echo 'gtk-theme-name="Breeze-Dark"' >> $HOME/.gtkrc-2.0
+    echo 'gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR' >> $HOME/.gtkrc-2.0
+    echo 'gtk-enable-event-sounds=1' >> $HOME/.gtkrc-2.0
+    echo 'gtk-enable-input-feedback-sounds=1' >> $HOME/.gtkrc-2.0
+    echo 'gtk-xft-antialias=1' >> $HOME/.gtkrc-2.0
+    echo 'gtk-xft-hinting=1' >> $HOME/.gtkrc-2.0
+    echo 'gtk-xft-hintstyle="hintfull"' >> $HOME/.gtkrc-2.0
+    echo 'gtk-xft-rgba="rgb"' >> $HOME/.gtkrc-2.0
+end
+
+if [ $CHOICE -eq 17 ] || [ $CHOICE -eq 2 ]
     # Let KDE/QT5 and GTK apps use the KDE theme and font.
     if grep -R "XDG_CURRENT_DESKTOP=KDE" /etc/environment > /dev/null
         echo "Cool XDG_CURRENT_DESKTOP=KDE is already in /etc/environment."
@@ -190,7 +276,7 @@ if [ $CHOICE -eq 17 ] || [ $CHOICE -eq 1 ]
     end
 end
 
-if [ $CHOICE -eq 18 ] || [ $CHOICE -eq 1 ]
+if [ $CHOICE -eq 18 ] || [ $CHOICE -eq 2 ]
     # Make sure firefox is installed.
     if pacman -Q firefox > /dev/null 2>&1
         echo "Cool firefox is already installed."
@@ -208,9 +294,9 @@ if [ $CHOICE -eq 18 ] || [ $CHOICE -eq 1 ]
     end
 end
 
-if [ $CHOICE -eq 19 ] || [ $CHOICE -eq 1 ] || [ $CHOICE -eq 5 ]
+if [ $CHOICE -eq 19 ] || [ $CHOICE -eq 2 ] || [ $CHOICE -eq 5 ]
     # Check bin files are executable.
-    echo "Checking if ~/.local/bin/ scripts are executable."
+    echo "Checking if DTOS scripts are executable."
     set BINS clock dtos-colorscheme dtos-help kernel memory pacupdate upt volume
     for i in $BINS
         if [ ! -x $HOME/.local/bin/$i ]
@@ -225,7 +311,30 @@ if [ $CHOICE -eq 19 ] || [ $CHOICE -eq 1 ] || [ $CHOICE -eq 5 ]
     chmod +x $HOME/.config/dmscripts/config
 end
 
-if [ $CHOICE -eq 20 ]
+if [ $CHOICE -eq 20 ] || [ $CHOICE -eq 2 ]
+    if [ -f /usr/share/icons/default/index.theme ]
+        if grep -R "Adwaita" /usr/share/icons/default/index.theme > /dev/null
+            echo "Setting breeze_cursors cursor theme."
+            sed -i 's/Adwaita/breeze_cursors/' /usr/share/icons/default/index.theme
+        else
+            echo "Cool breeze_cursors theme already set."
+        end
+    else
+        echo "/usr/share/icons/default/index.theme not found, skipping."
+    end
+end
+
+if [ $CHOICE -eq 21 ]
+    # Disable NaturalScrolling direction.
+    if [ -f /etc/X11/xorg.conf.d/30-touchpad.conf ]
+        echo "Setting NaturalScrolling to false."
+        sudo sed -i 's/"NaturalScrolling" "true"/"NaturalScrolling" "false"/' /etc/X11/xorg.conf.d/30-touchpad.conf
+    else
+        echo "TouchPad config file not found. Generate it first."
+    end
+end
+
+if [ $CHOICE -eq 30 ]
     if [ -f $HOME/.config/xmobar/doom-one-xmobarrc ]
         set OLDXFONTSIZE ( grep weight $HOME/.config/xmobar/doom-one-xmobarrc | cut -d "=" -f 4 | cut -d ":" -f 1 )
         set NEWXFONTSIZE ( echo $OLDXFONTSIZE + 1 | bc )
@@ -247,7 +356,7 @@ if [ $CHOICE -eq 20 ]
     end
 end
 
-if [ $CHOICE -eq 21 ]
+if [ $CHOICE -eq 31 ]
     if [ -f $HOME/.config/xmobar/doom-one-xmobarrc ]
         set OLDXFONTSIZE ( grep weight $HOME/.config/xmobar/doom-one-xmobarrc | cut -d "=" -f 4 | cut -d ":" -f 1 )
         set NEWXFONTSIZE ( echo $OLDXFONTSIZE - 1 | bc )
@@ -268,7 +377,7 @@ if [ $CHOICE -eq 21 ]
     end
 end
 
-if [ $CHOICE -eq 22 ]
+if [ $CHOICE -eq 32 ]
     if [ -f $HOME/.config/conky/xmonad/doom-one-01.conkyrc ]
         set OLDCFONTSIZE (grep size= $HOME/.config/conky/xmonad/doom-one-01.conkyrc | cut -f 3 -d "=" | cut -f 1 -d "'" | head -1)
         set CFONTSIZE1 ( echo $OLDCFONTSIZE + 1 | bc )
@@ -291,7 +400,7 @@ if [ $CHOICE -eq 22 ]
     end
 end
 
-if [ $CHOICE -eq 23 ]
+if [ $CHOICE -eq 33 ]
     if [ -f $HOME/.config/conky/xmonad/doom-one-01.conkyrc ]
         set OLDCFONTSIZE (grep size= $HOME/.config/conky/xmonad/doom-one-01.conkyrc | cut -f 3 -d "=" | cut -f 1 -d "'" | head -1)
         set CFONTSIZE1 ( echo $OLDCFONTSIZE - 1 | bc )
@@ -314,32 +423,7 @@ if [ $CHOICE -eq 23 ]
     end
 end
 
-if [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
-    # Xmobar font size for presets.
-    set LINENUMBERS (grep -n pixelsize= $HOME/.config/xmobar/doom-one-xmobarrc | cut -f 1 -d ":")
-    set LGXFONTSIZE ( echo $NEWXFONTSIZE + 1 | bc )
-    sed -i "$LINENUMBERS[1] s/pixelsize=[0-9]*/pixelsize=$NEWXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
-    sed -i "$LINENUMBERS[2] s/pixelsize=[0-9]*/pixelsize=$NEWXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
-    sed -i "$LINENUMBERS[3] s/pixelsize=[0-9]*/pixelsize=$LGXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
-    sed -i "$LINENUMBERS[4] s/pixelsize=[0-9]*/pixelsize=$LGXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
-    xmonad --restart
-    echo "Setting font size $NEWXFONTSIZE for Xmobar."
-end
-
-if [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
-    # Conky font size for presets.
-    set LINENUMBERS ( grep -n size= $HOME/.config/conky/xmonad/doom-one-01.conkyrc | cut -f 1 -d ":" )
-    set CFONTSIZE2 (printf %.0f (echo "$CFONTSIZE1 * 3.5" | bc))
-    set CFONTSIZE3 (printf %.0f (echo "$CFONTSIZE1 * 1.5" | bc))
-    set CFONTSIZE4 (printf %.0f (echo "$CFONTSIZE1 * 1.1" | bc))
-    sed -i "$LINENUMBERS[1] s/size=[0-9]*/size=$CFONTSIZE1/" $HOME/.config/conky/xmonad/*.conkyrc
-    sed -i "$LINENUMBERS[2] s/size=[0-9]*/size=$CFONTSIZE2/" $HOME/.config/conky/xmonad/*.conkyrc
-    sed -i "$LINENUMBERS[3] s/size=[0-9]*/size=$CFONTSIZE3/" $HOME/.config/conky/xmonad/*.conkyrc
-    sed -i "$LINENUMBERS[4] s/size=[0-9]*/size=$CFONTSIZE4/" $HOME/.config/conky/xmonad/*.conkyrc
-    echo "Setting font size $CFONTSIZE1 for Conky."
-end
-
-if [ $CHOICE -eq 24 ]
+if [ $CHOICE -eq 34 ]
     set NEWFONTSIZE 0
     while [ $NEWFONTSIZE -lt 6 ] || [ $NEWFONTSIZE -gt 20 ]
         echo "Choose a font size between 6 and 20."
@@ -349,7 +433,7 @@ if [ $CHOICE -eq 24 ]
 
 end
 
-if [ $CHOICE -eq 24 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
+if [ $CHOICE -eq 34 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
     # Set Systems font size.
 
     # Dmenu Font Size
@@ -412,27 +496,51 @@ if [ $CHOICE -eq 24 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
     if [ -f $HOME/.config/kdeglobals ]
         echo "Setting font size $NEWFONTSIZE in ~/.config/kdeglobals."
         set SMALLFONTSIZE (printf %.0f (echo "$NEWFONTSIZE * 0.8" | bc))
-        set LINENUMBER (grep -n "fixed=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
-        set OLDFONTSIZE (grep "fixed=" $HOME/.config/kdeglobals | cut -d "," -f 2)
-        sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
-        set LINENUMBER (grep -n "font=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
-        set OLDFONTSIZE (grep "font=" $HOME/.config/kdeglobals | cut -d "," -f 2)
-        sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
-        set LINENUMBER (grep -n "menuFont=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
-        set OLDFONTSIZE (grep "menuFont=" $HOME/.config/kdeglobals | cut -d "," -f 2)
-        sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
-        set LINENUMBER (grep -n "smallestReadableFont=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
-        set OLDFONTSIZE (grep "smallestReadableFont=" $HOME/.config/kdeglobals | cut -d "," -f 2)
-        sed -i "$LINENUMBER s/$OLDFONTSIZE/$SMALLFONTSIZE/1" $HOME/.config/kdeglobals
-        set LINENUMBER (grep -n "toolBarFont=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
-        set OLDFONTSIZE (grep "toolBarFont=" $HOME/.config/kdeglobals | cut -d "," -f 2)
-        sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
+        if not grep -R "\[General\]" $HOME/.config/kdeglobals > /dev/null
+            echo "" >> $HOME/.config/kdeglobals
+            echo "[General]" >> $HOME/.config/kdeglobals
+        end
+        if grep -R "toolBarFont=" $HOME/.config/kdeglobals > /dev/null
+            set LINENUMBER (grep -n "toolBarFont=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
+            set OLDFONTSIZE (grep "toolBarFont=" $HOME/.config/kdeglobals | cut -d "," -f 2)
+            sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
+        else
+            set NEWFONTSIZE 58; sed -i "/\[General\]/a toolBarFont=$NEWFONTSIZE,14,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
+        end
+        if grep -R "smallestReadableFont=" $HOME/.config/kdeglobals > /dev/null
+            set LINENUMBER (grep -n "smallestReadableFont=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
+            set OLDFONTSIZE (grep "smallestReadableFont=" $HOME/.config/kdeglobals | cut -d "," -f 2)
+            sed -i "$LINENUMBER s/$OLDFONTSIZE/$SMALLFONTSIZE/1" $HOME/.config/kdeglobals
+        else
+            set NEWFONTSIZE 58; sed -i "/\[General\]/a smallestReadableFont=$NEWFONTSIZE,14,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
+        end
+        if grep -R "menuFont=" $HOME/.config/kdeglobals > /dev/null
+            set LINENUMBER (grep -n "menuFont=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
+            set OLDFONTSIZE (grep "menuFont=" $HOME/.config/kdeglobals | cut -d "," -f 2)
+            sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
+        else
+            set NEWFONTSIZE 58; sed -i "/\[General\]/a menuFont=$NEWFONTSIZE,14,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
+        end
+        if grep -R "font=" $HOME/.config/kdeglobals > /dev/null
+            set LINENUMBER (grep -n "font=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
+            set OLDFONTSIZE (grep "font=" $HOME/.config/kdeglobals | cut -d "," -f 2)
+            sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
+        else
+            set NEWFONTSIZE 58; sed -i "/\[General\]/a font=$NEWFONTSIZE,14,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
+        end
+        if grep -R "fixed=" $HOME/.config/kdeglobals > /dev/null
+            set LINENUMBER (grep -n "fixed=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
+            set OLDFONTSIZE (grep "fixed=" $HOME/.config/kdeglobals | cut -d "," -f 2)
+            sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
+        else
+            set NEWFONTSIZE 58; sed -i "/\[General\]/a fixed=$NEWFONTSIZE,14,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
+        end
     else
         echo "~/.config/kdeglobals file not found, skipping."
     end
 end
 
-if [ $CHOICE -eq 25 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
+if [ $CHOICE -eq 35 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
     # Setting fonts to Noto Sans and Hack.
 
     # Setting Alacritty fonts to Hack.
@@ -491,7 +599,7 @@ if [ $CHOICE -eq 25 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
 end
 
 
-if [ $CHOICE -eq 26 ]
+if [ $CHOICE -eq 36 ]
     # Choose a Console font size.
     set VCFONTLIST ter-112 ter-114 ter-116 ter-118 ter-120 ter-122 ter-124 ter-128 ter-132
     set VCFONTSIZE 0
@@ -503,7 +611,7 @@ if [ $CHOICE -eq 26 ]
     end
 end
 
-if [ $CHOICE -eq 26 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
+if [ $CHOICE -eq 36 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
     # Set Console font size to VCFONTSIZE.
     echo "Setting font size $VCFONTSIZE for the console."
     if [ -f /etc/vconsole.conf ]
@@ -518,7 +626,11 @@ if [ $CHOICE -eq 26 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
     sudo fish -c "echo "FONT_MAP=8859-2" >> /etc/vconsole.conf"
 end
 
-if [ $CHOICE -eq 30 ]
+#if [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
+#    xmonad --restart
+#end
+
+if [ $CHOICE -eq 40 ]
     # Exit script.
     exit
 end
