@@ -1,9 +1,9 @@
 #!/bin/fish
 
 clear
-echo "   --------- DTOS Helper 1.1 ---------"
+echo "   --------- DTOS Helper 1.2 ---------"
 echo "1  Download latest DTOS Helper file."
-echo "2  Run all CONFIG & Autofix from 10 to 19."
+echo "2  Run all CONFIG & Autofix from 10 to 20."
 echo "3  1080x1920 14in Fonts + Autofix Preset."
 echo "4  768x1366 14in Fonts + Autofix Preset."
 echo "5  Reset DTOS from /etc/dtos folder."
@@ -11,9 +11,9 @@ echo "   -------- CONFIG & Autofix ---------"
 echo "10 Enable pacman ParallelDownloads."
 echo "11 Check needed packages are installed."
 echo "12 Create a touchpad.conf file."
-echo "13 Enable Screen Backlight keys."
-echo "14 Enable notification-daemon."
-echo "15 Fix alsa with pulseaudio muting."
+echo "13 Enable Backlight keys with flashText."
+echo "14 Alsa pulseaudio muting with flashText."
+echo "15 Enable notification-daemon."
 echo "16 Generate KDE GTK2/3/4 theme configs."
 echo "17 Let QT & GTK use the KDE themes."
 echo "18 Make firefox the default browser."
@@ -126,6 +126,34 @@ if [ $CHOICE -eq 12 ] || [ $CHOICE -eq 2 ]
     sudo mv 30-touchpad.conf /etc/X11/xorg.conf.d/
 end
 
+if [ $CHOICE -eq 13 ] || [ $CHOICE -eq 14 ] || [ $CHOICE -eq 2 ]
+    if not grep -R "XMonad.Actions.ShowText" $HOME/.xmonad/xmonad.hs > /dev/null
+        echo "Enabling XMonad.Actions.ShowText."
+        sed -i '/XMonad.Actions.Search/a import XMonad.Actions.ShowText' $HOME/.xmonad/xmonad.hs
+    else
+        echo "Cool XMonad.Actions.ShowText already enabled."
+    end
+    if not grep -R "Data.Maybe" $HOME/.xmonad/xmonad.hs | grep "fromMaybe" > /dev/null
+        sed -i 's/import Data.Maybe (/import Data.Maybe (fromMaybe, /' $HOME/.xmonad/xmonad.hs
+    end
+    if not grep -R "XMonad.Util.Loggers" $HOME/.xmonad/xmonad.hs > /dev/null
+        sed -i '/XMonad.Util.SpawnOnce/a import XMonad.Util.Loggers (logCmd)' $HOME/.xmonad/xmonad.hs
+    end
+    if not grep -R "Theme for showText which prints messages." $HOME/.xmonad/xmonad.hs > /dev/null
+        sed -i '/-- The layout hook/i -- Theme for showText which prints messages.' $HOME/.xmonad/xmonad.hs
+        sed -i '/-- The layout hook/i myTextConfig :: ShowTextConfig' $HOME/.xmonad/xmonad.hs
+        sed -i '/-- The layout hook/i myTextConfig = STC' $HOME/.xmonad/xmonad.hs
+        sed -i '/-- The layout hook/i \    { st_font               = "xft:Ubuntu:bold:size=60"' $HOME/.xmonad/xmonad.hs
+        sed -i '/-- The layout hook/i \    , st_bg                 = "#1c1f24"' $HOME/.xmonad/xmonad.hs
+        sed -i '/-- The layout hook/i \    , st_fg                 = "#ffffff"' $HOME/.xmonad/xmonad.hs
+        sed -i '/-- The layout hook/i \    }' $HOME/.xmonad/xmonad.hs
+        sed -i '/-- The layout hook/i \ ' $HOME/.xmonad/xmonad.hs
+    end
+    if not grep -R "handleTimerEvent" $HOME/.xmonad/xmonad.hs > /dev/null
+        sed -i 's/= docksEventHook/= docksEventHook <+> handleTimerEvent/' $HOME/.xmonad/xmonad.hs > /dev/null
+    end
+end
+
 if [ $CHOICE -eq 13 ] || [ $CHOICE -eq 2 ]
     # Make sure light is installed.
     if pacman -Q light > /dev/null 2>&1
@@ -148,18 +176,51 @@ if [ $CHOICE -eq 13 ] || [ $CHOICE -eq 2 ]
         echo "Cool XF86MonBrightnessUp is already in xmonad.hs."
     else
         echo "Adding XF86MonBrightnessUp to xmonad.hs"
-        sed -i '/XF86AudioPlay/i\        , ("<XF86MonBrightnessUp>", spawn "light -A 5")' $HOME/.xmonad/xmonad.hs
+        sed -i '/-- KB_GROUP Multimedia Keys/a\        , ("<XF86MonBrightnessUp>", logCmd "light -A 5 && light -G" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
     end
 
     if grep -R "XF86MonBrightnessDown" $HOME/.xmonad/xmonad.hs > /dev/null
         echo "Cool XF86MonBrightnessDown is already in xmonad.hs."
     else
         echo "Adding XF86MonBrightnessDown to xmonad.hs"
-        sed -i '/XF86AudioPlay/i\        , ("<XF86MonBrightnessDown>", spawn "light -U 5")' $HOME/.xmonad/xmonad.hs
+        sed -i '/-- KB_GROUP Multimedia Keys/a\        , ("<XF86MonBrightnessDown>", logCmd "light -U 5 && light -G" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
     end
 end
 
 if [ $CHOICE -eq 14 ] || [ $CHOICE -eq 2 ]
+    # Make sure pulseaudio-alsa is installed and add flashText support.
+    if pacman -Q pulseaudio-alsa > /dev/null 2>&1
+        echo "Cool pulseaudio-alsa is already installed."
+    else
+        echo "Installing pulseaudio-alsa."
+        sudo pacman -S pulseaudio-alsa
+    end
+    if grep -R '"<XF86AudioRaiseVolume>", spawn' $HOME/.xmonad/xmonad.hs > /dev/null
+        echo "Patching amixer volume raise with flashText."
+        sed -i '/"<XF86AudioRaiseVolume>", spawn/d' $HOME/.xmonad/xmonad.hs
+        sed -i '/"<XF86AudioNext>"/a\        , ("<XF86AudioRaiseVolume>", logCmd "amixer set Master 5%+ unmute | grep \'Right:\' | awk -F\'[][]\' \'{ print $2 }\'" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+    else
+        echo "Cool amixer volume raise with flashText already patched."
+    end
+
+    if grep -R '"<XF86AudioLowerVolume>", spawn' $HOME/.xmonad/xmonad.hs > /dev/null
+        echo "Patching amixer volume lower with flashText."
+        sed -i '/"<XF86AudioLowerVolume>", spawn/d' $HOME/.xmonad/xmonad.hs
+        sed -i '/"<XF86AudioNext>"/a\        , ("<XF86AudioLowerVolume>", logCmd "amixer set Master 5%- unmute | grep \'Right:\' | awk -F\'[][]\' \'{ print $2 }\'" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+    else
+        echo "Cool amixer volume lower with flashText already patched."
+    end
+
+    if grep -R '"<XF86AudioMute>", spawn' $HOME/.xmonad/xmonad.hs > /dev/null
+        echo "Patching amixer with pulse and flashText."
+        sed -i '/"<XF86AudioMute>", spawn/d' $HOME/.xmonad/xmonad.hs
+        sed -i '/"<XF86AudioNext>"/a\        , ("<XF86AudioMute>", logCmd "amixer -D pulse set Master toggle | grep \'Right:\' | awk -F\'[][]\' \'{ print $4 }\'" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+    else
+        echo "Cool amixer with pulse and flashText already patched."
+    end
+end
+
+if [ $CHOICE -eq 15 ] || [ $CHOICE -eq 2 ]
     # Make sure notification-daemon is installed.
     if pacman -Q notification-daemon > /dev/null 2>&1
         echo "Cool notification-daemon is already installed."
@@ -174,27 +235,6 @@ if [ $CHOICE -eq 14 ] || [ $CHOICE -eq 2 ]
     else
         echo "Adding notification-daemon to xmonad.hs"
         sed -i '/spawnOnce "picom"/i\    spawnOnce "/usr/lib/notification-daemon-1.0/notification-daemon"' $HOME/.xmonad/xmonad.hs
-    end
-end
-
-if [ $CHOICE -eq 15 ] || [ $CHOICE -eq 2 ]
-    # If pulse is installed add the alsa package so it mutes and unmutes correctly.
-    if pacman -Q pulseaudio > /dev/null 2>&1
-        echo "Pulse Audio found...."
-        if pacman -Q pulseaudio-alsa > /dev/null 2>&1
-            echo "Cool pulseaudio-alsa is already installed."
-        else
-            echo "Installing pulseaudio-alsa."
-            sudo pacman -S pulseaudio-alsa
-        end
-        if grep -R "amixer -D pulse set Master toggle" $HOME/.xmonad/xmonad.hs > /dev/null
-            echo "Cool amixer -D pulse set Master toggle is already in xmonad.hs"
-        else
-            echo "Updating amixer mute toggle with pulse in xmonad.hs"
-            sed -i 's/amixer set Master toggle/amixer -D pulse set Master toggle/' $HOME/.xmonad/xmonad.hs
-        end
-    else
-        echo "Skipping pulse audio."
     end
 end
 
@@ -345,7 +385,6 @@ if [ $CHOICE -eq 30 ]
             sed -i "$LINENUMBERS[2] s/pixelsize=[0-9]*/pixelsize=$NEWXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
             sed -i "$LINENUMBERS[3] s/pixelsize=[0-9]*/pixelsize=$LGXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
             sed -i "$LINENUMBERS[4] s/pixelsize=[0-9]*/pixelsize=$LGXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
-            xmonad --restart
             echo "Xmobar font increased to $NEWXFONTSIZE."
         else
             echo "Xmobar font limited to $OLDXFONTSIZE."
@@ -366,7 +405,6 @@ if [ $CHOICE -eq 31 ]
             sed -i "$LINENUMBERS[2] s/pixelsize=[0-9]*/pixelsize=$NEWXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
             sed -i "$LINENUMBERS[3] s/pixelsize=[0-9]*/pixelsize=$OLDXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
             sed -i "$LINENUMBERS[4] s/pixelsize=[0-9]*/pixelsize=$OLDXFONTSIZE/" $HOME/.config/xmobar/*-xmobarrc
-            xmonad --restart
             echo "Xmobar font increased to $NEWXFONTSIZE."
         else
             echo "Xmobar font limited to $OLDXFONTSIZE."
@@ -626,9 +664,9 @@ if [ $CHOICE -eq 36 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
     sudo fish -c "echo "FONT_MAP=8859-2" >> /etc/vconsole.conf"
 end
 
-#if [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
-#    xmonad --restart
-#end
+if [ $CHOICE -eq 2 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ] || [ $CHOICE -eq 5 ] || [ $CHOICE -eq 13 ] || [ $CHOICE -eq 14 ] || [ $CHOICE -eq 18 ] || [ $CHOICE -eq 30 ] || [ $CHOICE -eq 31 ] || [ $CHOICE -eq 34 ] || [ $CHOICE -eq 35 ]
+    xmonad --restart
+end
 
 if [ $CHOICE -eq 40 ]
     # Exit script.
