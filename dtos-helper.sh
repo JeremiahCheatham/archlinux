@@ -1,7 +1,7 @@
 #!/bin/fish
 
 clear
-echo "   --------- DTOS Helper 1.2 ---------"
+echo "   --------- DTOS Helper 1.3 ---------"
 echo "1  Download latest DTOS Helper file."
 echo "2  Run all CONFIG & Autofix from 10 to 20."
 echo "3  1080x1920 14in Fonts + Autofix Preset."
@@ -103,7 +103,7 @@ end
 
 if [ $CHOICE -eq 11 ] || [ $CHOICE -eq 2 ]
     # Check these packages are installed.
-    set PACKAGES alsa-utils light notification-daemon haskell-language-server bash-language-server firefox gnome-keyring ttf-hack noto-fonts terminus-font
+    set PACKAGES alsa-utils light notification-daemon haskell-language-server bash-language-server firefox gnome-keyring ttf-hack noto-fonts terminus-font breeze breeze-gtk
     if pacman -Q $PACKAGES > /dev/null 2>&1
         echo "Cool needed packages are already installed."
     else
@@ -172,18 +172,20 @@ if [ $CHOICE -eq 13 ] || [ $CHOICE -eq 2 ]
     end
 
     # Add keybindings for screen brightness.
-    if grep -R "XF86MonBrightnessUp" $HOME/.xmonad/xmonad.hs > /dev/null
+    if grep -R '"<XF86MonBrightnessUp>", logCmd' $HOME/.xmonad/xmonad.hs > /dev/null
         echo "Cool XF86MonBrightnessUp is already in xmonad.hs."
     else
         echo "Adding XF86MonBrightnessUp to xmonad.hs"
-        sed -i '/-- KB_GROUP Multimedia Keys/a\        , ("<XF86MonBrightnessUp>", logCmd "light -A 5 && light -G" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+        sed -i '/"<XF86MonBrightnessUp>"/d' $HOME/.xmonad/xmonad.hs
+        sed -i '/-- KB_GROUP Multimedia Keys/a\        , ("<XF86MonBrightnessUp>", logCmd "light -A 5 && printf \' %.0f%% \' $(light -G)" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
     end
 
-    if grep -R "XF86MonBrightnessDown" $HOME/.xmonad/xmonad.hs > /dev/null
+    if grep -R '"<XF86MonBrightnessDown>", logCmd' $HOME/.xmonad/xmonad.hs > /dev/null
         echo "Cool XF86MonBrightnessDown is already in xmonad.hs."
     else
         echo "Adding XF86MonBrightnessDown to xmonad.hs"
-        sed -i '/-- KB_GROUP Multimedia Keys/a\        , ("<XF86MonBrightnessDown>", logCmd "light -U 5 && light -G" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+        sed -i '/"<XF86MonBrightnessDown>"/d' $HOME/.xmonad/xmonad.hs
+        sed -i '/-- KB_GROUP Multimedia Keys/a\        , ("<XF86MonBrightnessDown>", logCmd "light -U 5 && printf \' %.0f%% \' $(light -G)" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
     end
 end
 
@@ -198,7 +200,7 @@ if [ $CHOICE -eq 14 ] || [ $CHOICE -eq 2 ]
     if grep -R '"<XF86AudioRaiseVolume>", spawn' $HOME/.xmonad/xmonad.hs > /dev/null
         echo "Patching amixer volume raise with flashText."
         sed -i '/"<XF86AudioRaiseVolume>", spawn/d' $HOME/.xmonad/xmonad.hs
-        sed -i '/"<XF86AudioNext>"/a\        , ("<XF86AudioRaiseVolume>", logCmd "amixer set Master 5%+ unmute | grep \'Right:\' | awk -F\'[][]\' \'{ print $2 }\'" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+        sed -i '/"<XF86AudioNext>"/a\        , ("<XF86AudioRaiseVolume>", logCmd "printf \' %s \' $(amixer -D pulse set Master 5%+ unmute | grep \'Right:\' | awk -F\'[][]\' \'{ print $2 }\')" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
     else
         echo "Cool amixer volume raise with flashText already patched."
     end
@@ -206,7 +208,7 @@ if [ $CHOICE -eq 14 ] || [ $CHOICE -eq 2 ]
     if grep -R '"<XF86AudioLowerVolume>", spawn' $HOME/.xmonad/xmonad.hs > /dev/null
         echo "Patching amixer volume lower with flashText."
         sed -i '/"<XF86AudioLowerVolume>", spawn/d' $HOME/.xmonad/xmonad.hs
-        sed -i '/"<XF86AudioNext>"/a\        , ("<XF86AudioLowerVolume>", logCmd "amixer set Master 5%- unmute | grep \'Right:\' | awk -F\'[][]\' \'{ print $2 }\'" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+        sed -i '/"<XF86AudioNext>"/a\        , ("<XF86AudioLowerVolume>", logCmd "printf \' %s \' $(amixer -D pulse set Master 5%- unmute | grep \'Right:\' | awk -F\'[][]\' \'{ print $2 }\')" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
     else
         echo "Cool amixer volume lower with flashText already patched."
     end
@@ -214,7 +216,7 @@ if [ $CHOICE -eq 14 ] || [ $CHOICE -eq 2 ]
     if grep -R '"<XF86AudioMute>", spawn' $HOME/.xmonad/xmonad.hs > /dev/null
         echo "Patching amixer with pulse and flashText."
         sed -i '/"<XF86AudioMute>", spawn/d' $HOME/.xmonad/xmonad.hs
-        sed -i '/"<XF86AudioNext>"/a\        , ("<XF86AudioMute>", logCmd "amixer -D pulse set Master toggle | grep \'Right:\' | awk -F\'[][]\' \'{ print $4 }\'" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+        sed -i '/"<XF86AudioNext>"/a\        , ("<XF86AudioMute>", logCmd "amixer -D pulse set Master toggle | grep \'off\' > /dev/null && echo \' Mute \' || echo \' Unmute \'" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
     else
         echo "Cool amixer with pulse and flashText already patched."
     end
@@ -285,7 +287,7 @@ if [ $CHOICE -eq 16 ] || [ $CHOICE -eq 2 ]
     echo "gtk-xft-hintstyle=hintfull" >> $HOME/.config/gtk-3.0/settings.ini
     echo "gtk-xft-rgba=rgb" >> $HOME/.config/gtk-3.0/settings.ini
 
-    # GTK 2.0 Theme ~/.gtkrc-2.0
+    # GTK 2.0 Theme ~/.gtkrc-2.0.
     echo "Generating GTK 2 theme config."
     echo 'gtk-button-images=1' > $HOME/.gtkrc-2.0
     echo 'gtk-cursor-theme-name="breeze_cursors"' >> $HOME/.gtkrc-2.0
@@ -304,6 +306,20 @@ if [ $CHOICE -eq 16 ] || [ $CHOICE -eq 2 ]
     echo 'gtk-xft-hinting=1' >> $HOME/.gtkrc-2.0
     echo 'gtk-xft-hintstyle="hintfull"' >> $HOME/.gtkrc-2.0
     echo 'gtk-xft-rgba="rgb"' >> $HOME/.gtkrc-2.0
+
+    # Xwindows theme ~/.config/xsettingsd/xsettingsd.conf.
+    echo "Generating Xwindows theme config."
+    echo 'Gtk/EnableAnimations 1' > $HOME/.config/xsettingsd/xsettingsd.conf
+    echo 'Gtk/DecorationLayout "icon:minimize,maximize,close"' >> $HOME/.config/xsettingsd/xsettingsd.conf
+    echo 'Gtk/PrimaryButtonWarpsSlider 0' >> $HOME/.config/xsettingsd/xsettingsd.conf
+    echo 'Gtk/ToolbarStyle 3' >> $HOME/.config/xsettingsd/xsettingsd.conf
+    echo 'Gtk/MenuImages 1' >> $HOME/.config/xsettingsd/xsettingsd.conf
+    echo 'Gtk/ButtonImages 1' >> $HOME/.config/xsettingsd/xsettingsd.conf
+    echo 'Gtk/CursorThemeSize 24' >> $HOME/.config/xsettingsd/xsettingsd.conf
+    echo 'Gtk/CursorThemeName "breeze_cursors"' >> $HOME/.config/xsettingsd/xsettingsd.conf
+    echo 'Net/IconThemeName "breeze-dark"' >> $HOME/.config/xsettingsd/xsettingsd.conf
+    echo 'Gtk/FontName "Noto Sans,  10"' >> $HOME/.config/xsettingsd/xsettingsd.conf
+    echo 'Net/ThemeName "Breeze"' >> $HOME/.config/xsettingsd/xsettingsd.conf
 end
 
 if [ $CHOICE -eq 17 ] || [ $CHOICE -eq 2 ]
@@ -530,6 +546,16 @@ if [ $CHOICE -eq 34 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
         echo "~/.config/gtk-4.0/settings.ini file not founds, skipping."
     end
 
+    # Set Xwindows font size.
+    if [ -f $HOME/.config/xsettingsd/xsettingsd.conf ]
+        echo "Setting font size $NEWFONTSIZE in ~/.config/xsettingsd/xsettingsd.conf"
+        set LINENUMBER (grep -n "FontName" $HOME/.config/xsettingsd/xsettingsd.conf | cut -d ":" -f 1)
+        set OLDFONTSIZE (grep "FontName" $HOME/.config/xsettingsd/xsettingsd.conf | cut -d "," -f 2 | cut -d '"' -f 1)
+        sed -i "$LINENUMBER s/$OLDFONTSIZE/  $NEWFONTSIZE/" $HOME/.config/xsettingsd/xsettingsd.conf
+    else
+        echo "~/.config/xsettingsd/xsettingsd.conf"
+    end
+
     # Set QT/KDE font size.
     if [ -f $HOME/.config/kdeglobals ]
         echo "Setting font size $NEWFONTSIZE in ~/.config/kdeglobals."
@@ -543,35 +569,42 @@ if [ $CHOICE -eq 34 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
             set OLDFONTSIZE (grep "toolBarFont=" $HOME/.config/kdeglobals | cut -d "," -f 2)
             sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
         else
-            set NEWFONTSIZE 58; sed -i "/\[General\]/a toolBarFont=$NEWFONTSIZE,14,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
+            sed -i "/\[General\]/a toolBarFont=Noto Sans,$NEWFONTSIZE,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
         end
         if grep -R "smallestReadableFont=" $HOME/.config/kdeglobals > /dev/null
             set LINENUMBER (grep -n "smallestReadableFont=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
             set OLDFONTSIZE (grep "smallestReadableFont=" $HOME/.config/kdeglobals | cut -d "," -f 2)
             sed -i "$LINENUMBER s/$OLDFONTSIZE/$SMALLFONTSIZE/1" $HOME/.config/kdeglobals
         else
-            set NEWFONTSIZE 58; sed -i "/\[General\]/a smallestReadableFont=$NEWFONTSIZE,14,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
+            sed -i "/\[General\]/a smallestReadableFont=Noto Sans,$NEWFONTSIZE,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
         end
         if grep -R "menuFont=" $HOME/.config/kdeglobals > /dev/null
             set LINENUMBER (grep -n "menuFont=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
             set OLDFONTSIZE (grep "menuFont=" $HOME/.config/kdeglobals | cut -d "," -f 2)
             sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
         else
-            set NEWFONTSIZE 58; sed -i "/\[General\]/a menuFont=$NEWFONTSIZE,14,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
+            sed -i "/\[General\]/a menuFont=Noto Sans,$NEWFONTSIZE,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
         end
         if grep -R "font=" $HOME/.config/kdeglobals > /dev/null
             set LINENUMBER (grep -n "font=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
             set OLDFONTSIZE (grep "font=" $HOME/.config/kdeglobals | cut -d "," -f 2)
             sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
         else
-            set NEWFONTSIZE 58; sed -i "/\[General\]/a font=$NEWFONTSIZE,14,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
+            sed -i "/\[General\]/a font=Noto Sans,$NEWFONTSIZE,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
         end
         if grep -R "fixed=" $HOME/.config/kdeglobals > /dev/null
             set LINENUMBER (grep -n "fixed=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
             set OLDFONTSIZE (grep "fixed=" $HOME/.config/kdeglobals | cut -d "," -f 2)
             sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
         else
-            set NEWFONTSIZE 58; sed -i "/\[General\]/a fixed=$NEWFONTSIZE,14,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
+            sed -i "/\[General\]/a fixed=Hack,$NEWFONTSIZE,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
+        end
+        if grep -R "activeFont=" $HOME/.config/kdeglobals > /dev/null
+            set LINENUMBER (grep -n "activeFont=" $HOME/.config/kdeglobals | cut -d ":" -f 1)
+            set OLDFONTSIZE (grep "activeFont=" $HOME/.config/kdeglobals | cut -d "," -f 2)
+            sed -i "$LINENUMBER s/$OLDFONTSIZE/$NEWFONTSIZE/1" $HOME/.config/kdeglobals
+        else
+            sed -i "/\[WM\]/a activeFont=Noto Sans,$NEWFONTSIZE,-1,5,50,0,0,0,0,0" $HOME/.config/kdeglobals
         end
     else
         echo "~/.config/kdeglobals file not found, skipping."
