@@ -1,0 +1,133 @@
+--[[
+####################################
+##  doom-one-01.conkyrc (XMonad)  ##
+####################################
+]]
+
+conky.config = {
+
+	--Various settings
+	background = true, 							-- forked to background
+	cpu_avg_samples = 2,						-- The number of samples to average for CPU monitoring.
+	diskio_avg_samples = 10,					-- The number of samples to average for disk I/O monitoring.
+	double_buffer = true,						-- Use the Xdbe extension? (eliminates flicker)
+	if_up_strictness = 'address',				-- how strict if testing interface is up - up, link or address
+	net_avg_samples = 2,						-- The number of samples to average for net data
+	no_buffers = true,							-- Subtract (file system) buffers from used memory?
+	temperature_unit = 'fahrenheit',			-- fahrenheit or celsius
+	text_buffer_size = 2048,					-- size of buffer for display of content of large variables - default 256
+	update_interval = 1,						-- update interval
+	imlib_cache_size = 0,                       -- disable image cache to get a new spotify cover per song
+
+	-- Placement (Conky on MIDDLE of THREE monitors at 1920x1080)
+	--alignment = 'top_left',		                -- top_left,top_middle,top_right,bottom_left,bottom_middle,bottom_right,
+	--gap_x = 3540,                               -- pixels between right or left border
+	--gap_y = 70,									-- pixels between bottom or left border
+
+    -- Placement (For SINGLE monitor users!)
+	alignment = 'top_right',		            -- top_left,top_middle,top_right,bottom_left,bottom_middle,bottom_right,
+	gap_x = 50,								-- pixels between right or left border
+	gap_y = 70,								-- pixels between bottom or left border
+
+    -- Size
+    minimum_height = 200,						-- minimum height of window
+	minimum_width = 260,						-- minimum width of window
+	maximum_width = 260,						-- maximum width of window
+
+	--Graphical
+	border_inner_margin = 5, 					-- margin between border and text
+	border_outer_margin = 5, 					-- margin between border and edge of window
+	border_width = 0, 							-- border width in pixels
+	default_bar_width = 260,					-- default is 0 - full width
+	default_bar_height = 10,					-- default is 6
+	default_gauge_height = 25,					-- default is 25
+	default_gauge_width =40,					-- default is 40
+	default_graph_height = 40,					-- default is 25
+	default_graph_width = 153,					-- default is 0 - full width
+	default_shade_color = '#000000',			-- default shading colour
+	default_outline_color = '#000000',			-- default outline colour
+	draw_borders = false,						-- draw borders around text
+	draw_graph_borders = true,					-- draw borders around graphs
+	draw_shades = false,						-- draw shades
+	draw_outline = false,						-- draw outline
+	stippled_borders = 0,						-- dashing the border
+
+	--Textual
+	format_human_readable = true,				-- KiB, MiB rather then number of bytes
+	font  = 'Noto Sans:bold:size=7',  	-- the default font used
+	font2 = 'Noto Sans:bold:size=24',         	-- font for the time
+	font3 = 'Noto Sans:size=10',               	-- font for the date
+	font4 = 'Noto Sans:bold:size=8',              -- font for the keybindings heading
+	max_text_width = 0,							-- 0 will make sure line does not get broken if width too smal
+	max_user_text = 16384,						-- max text in conky default 16384
+	override_utf8_locale = true,				-- force UTF8 requires xft
+	short_units = true,							-- shorten units from KiB to k
+	top_name_width = 21,						-- width for $top name value default 15
+	top_name_verbose = false,					-- If true, top name shows the full command line of  each  process - Default value is false.
+	uppercase = false,							-- uppercase or not
+	use_spacer = 'none',						-- adds spaces around certain objects to align - default none
+	use_xft = true,								-- xft font - anti-aliased font
+	xftalpha = 1,								-- alpha of the xft font - between 0-1
+
+	--Windows
+	own_window = false,							-- create your own window to draw
+	own_window_argb_value = 255,			    -- real transparency - composite manager required 0-255
+	own_window_argb_visual = true,				-- use ARGB - composite manager required
+	own_window_class = 'Conky',					-- manually set the WM_CLASS name for use with xprop
+	own_window_colour = '#282c34',				-- set colour if own_window_transparent no
+	own_window_transparent = false,				-- if own_window_argb_visual is true sets background opacity 0%
+	own_window_title = 'xmonad_conky',			-- set the name manually
+	own_window_type = 'desktop',				-- if own_window true options are: normal/override/dock/desktop/panel
+	own_window_hints = 'below,undecorated,sticky,skip_taskbar,skip_pager',  -- if own_window true - just hints - own_window_type sets it
+
+	--Colors (Doom One)
+	color0 = '#c678dd',
+	color1 = '#bbc2cf',
+	color2 = '#51afef',
+	color3 = '#98be65',
+};
+
+
+conky.text = [[
+${font Arial:size=20}${color Tan1}RPI${color Ivory}LINUX
+
+${voffset -90}
+${color DimGray}
+${font}
+${font Arial:bold:size=10}${color Tan1}SYSTEM ${color DarkSlateGray} ${hr 2}
+$font${color DimGray}$sysname $kernel $alignr $machine
+Frequency $alignr${freq_g cpu0}Ghz
+Uptime $alignr${uptime}
+File System $alignr${fs_type}
+
+${font Arial:bold:size=10}${color Tan1}CPU ${color DarkSlateGray}${hr 2}
+$font${color DimGray}Temp: $alignr ${exec /opt/vc/bin/vcgencmd measure_temp | cut -c6-9} C
+$font${color DimGray}CPU1  ${cpu cpu1}% ${cpubar cpu1}
+CPU2  ${cpu cpu2}% ${cpubar cpu2}
+${cpugraph DimGray DarkSlateGray} $color
+
+${font Arial:bold:size=10}${color Tan1}MEMORY ${color DarkSlateGray}${hr 2}
+$font${color DimGray}MEM $alignc $mem / $memmax $alignr $memperc%
+$membar
+$font${color DimGray}SWAP $alignc $swap / $swapmax $alignr $swapperc%
+$swapbar
+
+${font Arial:bold:size=10}${color Tan1}HDD ${color DarkSlateGray}${hr 2}
+$font${color DimGray}/home $alignc ${fs_used /home} / ${fs_size /home} $alignr ${fs_free_perc /home}%
+${fs_bar /home}
+
+${font Arial:bold:size=10}${color Tan1}TOP PROCESSES ${color DarkSlateGray}${hr 2}
+${color DimGray}$font${top_mem name 2}${alignr}${top mem 2} %
+$font${top_mem name 3}${alignr}${top mem 3} %
+$font${top_mem name 4}${alignr}${top mem 4} %
+$font${top_mem name 5}${alignr}${top mem 5} %
+
+${font Arial:bold:size=10}${color Tan2}NETWORK ${color DarkSlateGray}${hr 2}
+$font${color DimGray}IP on wlan0 $alignr ${addr wlan0}
+
+Down $alignr ${downspeed wlan0} kb/s
+Up $alignr ${upspeed wlan0} kb/s
+
+Downloaded: $alignr  ${totaldown wlan0}
+Uploaded: $alignr  ${totalup wlan0}
+]];
