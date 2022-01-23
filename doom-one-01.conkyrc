@@ -14,7 +14,7 @@ conky.config = {
 	if_up_strictness = 'address',				-- how strict if testing interface is up - up, link or address
 	net_avg_samples = 2,						-- The number of samples to average for net data
 	no_buffers = true,							-- Subtract (file system) buffers from used memory?
-	temperature_unit = 'fahrenheit',			-- fahrenheit or celsius
+	temperature_unit = 'celsius',			-- fahrenheit or celsius
 	text_buffer_size = 2048,					-- size of buffer for display of content of large variables - default 256
 	update_interval = 1,						-- update interval
 	imlib_cache_size = 0,                       -- disable image cache to get a new spotify cover per song
@@ -54,10 +54,10 @@ conky.config = {
 
 	--Textual
 	format_human_readable = true,				-- KiB, MiB rather then number of bytes
-	font  = 'Noto Sans:bold:size=7',  	-- the default font used
-	font2 = 'Noto Sans:bold:size=24',         	-- font for the time
-	font3 = 'Noto Sans:size=10',               	-- font for the date
-	font4 = 'Noto Sans:bold:size=8',              -- font for the keybindings heading
+	font  = 'Noto Sans:bold:size=11',  	-- the default font used
+	font2 = 'Noto Sans:bold:size=38',         	-- font for the time
+	font3 = 'Noto Sans:size=16',               	-- font for the date
+	font4 = 'Noto Sans:bold:size=12',              -- font for the keybindings heading
 	max_text_width = 0,							-- 0 will make sure line does not get broken if width too smal
 	max_user_text = 16384,						-- max text in conky default 16384
 	override_utf8_locale = true,				-- force UTF8 requires xft
@@ -70,7 +70,7 @@ conky.config = {
 	xftalpha = 1,								-- alpha of the xft font - between 0-1
 
 	--Windows
-	own_window = false,							-- create your own window to draw
+	own_window = true,							-- create your own window to draw
 	own_window_argb_value = 255,			    -- real transparency - composite manager required 0-255
 	own_window_argb_visual = true,				-- use ARGB - composite manager required
 	own_window_class = 'Conky',					-- manually set the WM_CLASS name for use with xprop
@@ -78,7 +78,7 @@ conky.config = {
 	own_window_transparent = false,				-- if own_window_argb_visual is true sets background opacity 0%
 	own_window_title = 'xmonad_conky',			-- set the name manually
 	own_window_type = 'desktop',				-- if own_window true options are: normal/override/dock/desktop/panel
-	own_window_hints = 'below,undecorated,sticky,skip_taskbar,skip_pager',  -- if own_window true - just hints - own_window_type sets it
+	own_window_hints = 'undecorated,below,above,sticky,skip_taskbar,skip_pager',  -- if own_window true - just hints - own_window_type sets it
 
 	--Colors (Doom One)
 	color0 = '#c678dd',
@@ -89,45 +89,50 @@ conky.config = {
 
 
 conky.text = [[
-${font Arial:size=20}${color Tan1}RPI${color Ivory}LINUX
+${font3}${exec grep "^NAME" /etc/os-release | cut -d '"' -f 2}${font}
+${alignc}${color0}${font2}${time %H:%M}${font}
+${alignc}${color0}${font3}${time %b %d, %Y}${font}${color}${font}
 
-${voffset -90}
-${color DimGray}
-${font}
-${font Arial:bold:size=10}${color Tan1}SYSTEM ${color DarkSlateGray} ${hr 2}
-$font${color DimGray}$sysname $kernel $alignr $machine
-Frequency $alignr${freq_g cpu0}Ghz
-Uptime $alignr${uptime}
-File System $alignr${fs_type}
-
-${font Arial:bold:size=10}${color Tan1}CPU ${color DarkSlateGray}${hr 2}
-$font${color DimGray}Temp: $alignr ${exec /opt/vc/bin/vcgencmd measure_temp | cut -c6-9} C
-$font${color DimGray}CPU1  ${cpu cpu1}% ${cpubar cpu1}
-CPU2  ${cpu cpu2}% ${cpubar cpu2}
-${cpugraph DimGray DarkSlateGray} $color
-
-${font Arial:bold:size=10}${color Tan1}MEMORY ${color DarkSlateGray}${hr 2}
-$font${color DimGray}MEM $alignc $mem / $memmax $alignr $memperc%
-$membar
-$font${color DimGray}SWAP $alignc $swap / $swapmax $alignr $swapperc%
-$swapbar
-
-${font Arial:bold:size=10}${color Tan1}HDD ${color DarkSlateGray}${hr 2}
-$font${color DimGray}/home $alignc ${fs_used /home} / ${fs_size /home} $alignr ${fs_free_perc /home}%
-${fs_bar /home}
-
-${font Arial:bold:size=10}${color Tan1}TOP PROCESSES ${color DarkSlateGray}${hr 2}
-${color DimGray}$font${top_mem name 2}${alignr}${top mem 2} %
-$font${top_mem name 3}${alignr}${top mem 3} %
-$font${top_mem name 4}${alignr}${top mem 4} %
-$font${top_mem name 5}${alignr}${top mem 5} %
-
-${font Arial:bold:size=10}${color Tan2}NETWORK ${color DarkSlateGray}${hr 2}
-$font${color DimGray}IP on wlan0 $alignr ${addr wlan0}
-
-Down $alignr ${downspeed wlan0} kb/s
-Up $alignr ${upspeed wlan0} kb/s
-
-Downloaded: $alignr  ${totaldown wlan0}
-Uploaded: $alignr  ${totalup wlan0}
+# ##################### SYSTEM ######################
+${font4}${color3}SYSTEM ${color1}${hr 2}${font}
+${color1}$sysname $kernel ${alignr}${color} $machine
+${color1}Temperature ${alignr}${color} ${hwmon 1 temp 1} °C
+${color1}Uptime ${alignr}${color} ${uptime}
+${color1}File System ${alignr}${color} ${fs_type}
+# ####################### CPU ########################
+${font4}${color3}CPU ${color1}${hr 2}${font}
+${color1}CPU ${color}${cpu cpu0} %${alignc} ${freq_g cpu0} Ghz ${alignr} ${hwmon 1 temp 1} °C
+${color2}${cpugraph 50,260}
+${cpubar cpu1 10,125}${offset 10}${cpubar cpu2 10,125}
+${cpubar cpu3 10,125}${offset 10}${cpubar cpu4 10,125}
+${cpubar cpu5 10,125}${offset 10}${cpubar cpu6 10,125}
+${cpubar cpu7 10,125}${offset 10}${cpubar cpu8 10,125}
+${cpubar cpu9 10,125}${offset 10}${cpubar cpu10 10,125}
+${cpubar cpu11 10,125}${offset 10}${cpubar cpu12 10,125}
+${cpubar cpu13 10,125}${offset 10}${cpubar cpu14 10,125}
+${cpubar cpu15 10,125}${offset 10}${cpubar cpu16 10,125}
+# ##################### Memory ######################
+${font4}${color3}MEMORY ${color1}${hr 2}${font}
+${font}${color1}MEM ${alignc}${color} $mem / $memmax $alignr $memperc%
+${color2}${membar}
+${color1}SWAP ${alignc}${color} $swap / $swapmax $alignr $swapperc%
+${color2}${swapbar}
+# ###################### Storage #######################
+${font4}${color3}HDD / SSD ${color1}${hr 2}${font}
+${color1}/home ${alignc}${color}${fs_used /home} / ${fs_size /home} $alignr ${fs_free_perc /home}%
+${color2}${fs_bar /home}
+# ################## Top Proccesses ###################
+${font4}${color3}TOP PROCESSES ${color1}${hr 2}${font}
+${color1}${top_mem name 1}${alignr}${color}${top mem 1} %
+${color1}${top_mem name 2}${alignr}${color}${top mem 2} %
+${color1}${top_mem name 3}${alignr}${color}${top mem 3} %
+${color1}${top_mem name 4}${alignr}${color}${top mem 4} %
+${color1}${top_mem name 5}${alignr}${color}${top mem 5} %
+# ##################### Network ########################
+${font4}${color3}NETWORK ${color1}${hr 2}${font}
+${color1}IP on wlan0${alignr}${color}${addr wlan0}
+${color1}Down ${alignr}${color}${downspeed wlan0} kb/s
+${color1}Up ${alignr}${color}${upspeed wlan0} kb/s
+${color1}Downloaded: ${alignr}${color}${totaldown wlan0}
+${color1}Uploaded: ${alignr}${color}${totalup wlan0}
 ]];
