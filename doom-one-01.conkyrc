@@ -104,13 +104,13 @@ ${font4}${color3}CPU ${color1}${hr 2}${font}
 ${color1}CPU ${color}${cpu cpu0} %${alignc} ${freq_g cpu0} Ghz ${alignr} ${hwmon 1 temp 1} °C
 ${color2}${cpugraph 50,260}
 ${cpubar cpu1 10,125}${offset 10}${cpubar cpu2 10,125}
-${cpubar cpu3 10,125}${offset 10}${cpubar cpu4 10,125}
-${cpubar cpu5 10,125}${offset 10}${cpubar cpu6 10,125}
-${cpubar cpu7 10,125}${offset 10}${cpubar cpu8 10,125}
-${cpubar cpu9 10,125}${offset 10}${cpubar cpu10 10,125}
-${cpubar cpu11 10,125}${offset 10}${cpubar cpu12 10,125}
-${cpubar cpu13 10,125}${offset 10}${cpubar cpu14 10,125}
-${cpubar cpu15 10,125}${offset 10}${cpubar cpu16 10,125}
+#${cpubar cpu3 10,125}${offset 10}${cpubar cpu4 10,125}
+#${cpubar cpu5 10,125}${offset 10}${cpubar cpu6 10,125}
+#${cpubar cpu7 10,125}${offset 10}${cpubar cpu8 10,125}
+#${cpubar cpu9 10,125}${offset 10}${cpubar cpu10 10,125}
+#${cpubar cpu11 10,125}${offset 10}${cpubar cpu12 10,125}
+#${cpubar cpu13 10,125}${offset 10}${cpubar cpu14 10,125}
+#${cpubar cpu15 10,125}${offset 10}${cpubar cpu16 10,125}
 # ##################### Memory ######################
 ${font4}${color3}MEMORY ${color1}${hr 2}${font}
 ${font}${color1}MEM ${alignc}${color} $mem / $memmax $alignr $memperc%
