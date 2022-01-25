@@ -1,7 +1,7 @@
 #!/bin/fish
 
 clear
-echo "   --------- DTOS Helper 1.3 ---------"
+echo "   --------- DTOS Helper 1.4 ---------"
 echo "1  Download latest DTOS Helper file."
 echo "2  Run all CONFIG & Autofix from 10 to 20."
 echo "3  1080x1920 14in Fonts + Autofix Preset."
@@ -21,6 +21,7 @@ echo "19 Make DTOS scripts are executable."
 echo "20 Switch Adwaita to breeze_cursors."
 echo "   ---------- OTHER CONFIG -----------"
 echo "21 Disable NaturalScrolling touchpad.conf."
+echo "22 Use pulseaudio for extended volume."
 echo "   -------------- FONTS --------------"
 echo "30 Increase Xmobar font size."
 echo "31 Decrease Xmobar font size."
@@ -103,7 +104,7 @@ end
 
 if [ $CHOICE -eq 11 ] || [ $CHOICE -eq 2 ]
     # Check these packages are installed.
-    set PACKAGES alsa-utils light notification-daemon haskell-language-server bash-language-server firefox gnome-keyring ttf-hack noto-fonts terminus-font breeze breeze-gtk
+    set PACKAGES alsa-utils audacity bash-language-server breeze breeze-gtk firefox geany geary gimp gnome-keyring haskell-language-server kdenlive libreoffice-fresh light notification-daemon noto-fonts obs-studio pass pcmanfm terminus-font ttf-hack
     if pacman -Q $PACKAGES > /dev/null 2>&1
         echo "Cool needed packages are already installed."
     else
@@ -390,7 +391,26 @@ if [ $CHOICE -eq 21 ]
     end
 end
 
+if [ $CHOICE -eq 22 ]
+    # Switch alsa for pulseaudio keybindings.
+    if grep -R '"<XF86AudioRaiseVolume>", logCmd "printf \' %s \' $(pactl' $HOME/.xmonad/xmonad.hs > /dev/null
+        echo "Cool pactl -- set-sink-volume 0 +5% is already in xmonad.hs."
+    else
+        echo "Adding pactl -- set-sink-volume 0 +5% to xmonad.hs"
+        sed -i '/"<XF86AudioRaiseVolume>"/d' $HOME/.xmonad/xmonad.hs
+        sed -i '/<XF86AudioMute>/a\        , ("<XF86AudioRaiseVolume>", logCmd "printf \' %s \' $(pactl -- set-sink-volume 0 +5% && pactl -- get-sink-volume 0 | grep -o \'[0-9]*%\' | head -1)" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+    end
+    if grep -R '"<XF86AudioLowerVolume>", logCmd "printf \' %s \' $(pactl' $HOME/.xmonad/xmonad.hs > /dev/null
+        echo "Cool pactl -- set-sink-volume 0 -5% is already in xmonad.hs."
+    else
+        echo "Adding pactl -- set-sink-volume 0 -5% to xmonad.hs"
+        sed -i '/"<XF86AudioLowerVolume>"/d' $HOME/.xmonad/xmonad.hs
+        sed -i '/<XF86AudioRaiseVolume>/a\        , ("<XF86AudioLowerVolume>", logCmd "printf \' %s \' $(pactl -- set-sink-volume 0 -5% && pactl -- get-sink-volume 0 | grep -o \'[0-9]*%\' | head -1)" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+    end
+end
+
 if [ $CHOICE -eq 30 ]
+    # Increase Xmobar font size.
     if [ -f $HOME/.config/xmobar/doom-one-xmobarrc ]
         set OLDXFONTSIZE ( grep weight $HOME/.config/xmobar/doom-one-xmobarrc | cut -d "=" -f 4 | cut -d ":" -f 1 )
         set NEWXFONTSIZE ( echo $OLDXFONTSIZE + 1 | bc )
@@ -412,6 +432,7 @@ if [ $CHOICE -eq 30 ]
 end
 
 if [ $CHOICE -eq 31 ]
+    # Decrease Xmobar font size.
     if [ -f $HOME/.config/xmobar/doom-one-xmobarrc ]
         set OLDXFONTSIZE ( grep weight $HOME/.config/xmobar/doom-one-xmobarrc | cut -d "=" -f 4 | cut -d ":" -f 1 )
         set NEWXFONTSIZE ( echo $OLDXFONTSIZE - 1 | bc )
@@ -432,6 +453,7 @@ if [ $CHOICE -eq 31 ]
 end
 
 if [ $CHOICE -eq 32 ]
+    # Increase Conky font size.
     if [ -f $HOME/.config/conky/xmonad/doom-one-01.conkyrc ]
         set OLDCFONTSIZE (grep size= $HOME/.config/conky/xmonad/doom-one-01.conkyrc | cut -f 3 -d "=" | cut -f 1 -d "'" | head -1)
         set CFONTSIZE1 ( echo $OLDCFONTSIZE + 1 | bc )
@@ -455,6 +477,7 @@ if [ $CHOICE -eq 32 ]
 end
 
 if [ $CHOICE -eq 33 ]
+    # Decrease Conky font size.
     if [ -f $HOME/.config/conky/xmonad/doom-one-01.conkyrc ]
         set OLDCFONTSIZE (grep size= $HOME/.config/conky/xmonad/doom-one-01.conkyrc | cut -f 3 -d "=" | cut -f 1 -d "'" | head -1)
         set CFONTSIZE1 ( echo $OLDCFONTSIZE - 1 | bc )
@@ -490,6 +513,10 @@ end
 if [ $CHOICE -eq 34 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
     # Set Systems font size.
 
+    # Xterm font size in ~/.Xresources
+    sed -i "s/size=[0-9]*/size=$NEWFONTSIZE/" $HOME/.Xresources
+    sed -i "s/faceSize: [0-9]*/faceSize: $NEWFONTSIZE/" $HOME/.Xresources
+
     # Dmenu Font Size
     echo "Setting font size $NEWFONTSIZE in ~/.config/dmscripts/config"
     if grep -R "xft:size=14" $HOME/.config/dmscripts/config > /dev/null
@@ -501,6 +528,11 @@ if [ $CHOICE -eq 34 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
         sed -i "s/dmenu_run -fn xft:size=[0-9]*/dmenu_run -fn xft:size=$NEWFONTSIZE/" $HOME/.xmonad/xmonad.hs
     else
         sed -i "s/dmenu_run -i -p/dmenu_run -fn xft:size=$NEWFONTSIZE -i -p/" $HOME/.xmonad/xmonad.hs
+    end
+    if grep -R "passmenu -fn xft:size=" $HOME/.xmonad/xmonad.hs > /dev/null
+        sed -i "s/passmenu -fn xft:size=[0-9]*/passmenu -fn xft:size=$NEWFONTSIZE/" $HOME/.xmonad/xmonad.hs
+    else
+        sed -i "s/passmenu/passmenu -fn xft:size=$NEWFONTSIZE -i -p/" $HOME/.xmonad/xmonad.hs
     end
 
     # Xmonad font size.
@@ -697,7 +729,7 @@ if [ $CHOICE -eq 36 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ]
     sudo fish -c "echo "FONT_MAP=8859-2" >> /etc/vconsole.conf"
 end
 
-if [ $CHOICE -eq 2 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ] || [ $CHOICE -eq 5 ] || [ $CHOICE -eq 13 ] || [ $CHOICE -eq 14 ] || [ $CHOICE -eq 18 ] || [ $CHOICE -eq 30 ] || [ $CHOICE -eq 31 ] || [ $CHOICE -eq 34 ] || [ $CHOICE -eq 35 ]
+if [ $CHOICE -eq 2 ] || [ $CHOICE -eq 3 ] || [ $CHOICE -eq 4 ] || [ $CHOICE -eq 5 ] || [ $CHOICE -eq 13 ] || [ $CHOICE -eq 14 ] || [ $CHOICE -eq 18 ] || [ $CHOICE -eq 22 ] || [ $CHOICE -eq 30 ] || [ $CHOICE -eq 31 ] || [ $CHOICE -eq 34 ] || [ $CHOICE -eq 35 ]
     xmonad --restart
 end
 
