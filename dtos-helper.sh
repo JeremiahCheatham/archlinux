@@ -393,19 +393,23 @@ end
 
 if [ $CHOICE -eq 22 ]
     # Switch alsa for pulseaudio keybindings.
+
+    set SINK ( pactl list | grep -oP 'Sink #\K([0-9]+)' )
     if grep -R '"<XF86AudioRaiseVolume>", logCmd "printf \' %s \' $(pactl' $HOME/.xmonad/xmonad.hs > /dev/null
         echo "Cool pactl -- set-sink-volume 0 +5% is already in xmonad.hs."
     else
         echo "Adding pactl -- set-sink-volume 0 +5% to xmonad.hs"
         sed -i '/"<XF86AudioRaiseVolume>"/d' $HOME/.xmonad/xmonad.hs
-        sed -i '/<XF86AudioMute>/a\        , ("<XF86AudioRaiseVolume>", logCmd "printf \' %s \' $(pactl -- set-sink-volume 0 +5% && pactl -- get-sink-volume 0 | grep -o \'[0-9]*%\' | head -1)" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+        sed -i '/<XF86AudioMute>/a\        , ("<XF86AudioRaiseVolume>", logCmd "printf \' %s \' $(pactl -- set-sink-volume PASINK +5% && pactl -- get-sink-volume 0 | grep -o \'[0-9]*%\' | head -1)" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+        sed -i "s/PASINK/$SINK/" $HOME/.xmonad/xmonad.hs
     end
     if grep -R '"<XF86AudioLowerVolume>", logCmd "printf \' %s \' $(pactl' $HOME/.xmonad/xmonad.hs > /dev/null
         echo "Cool pactl -- set-sink-volume 0 -5% is already in xmonad.hs."
     else
         echo "Adding pactl -- set-sink-volume 0 -5% to xmonad.hs"
         sed -i '/"<XF86AudioLowerVolume>"/d' $HOME/.xmonad/xmonad.hs
-        sed -i '/<XF86AudioRaiseVolume>/a\        , ("<XF86AudioLowerVolume>", logCmd "printf \' %s \' $(pactl -- set-sink-volume 0 -5% && pactl -- get-sink-volume 0 | grep -o \'[0-9]*%\' | head -1)" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+        sed -i '/<XF86AudioRaiseVolume>/a\        , ("<XF86AudioLowerVolume>", logCmd "printf \' %s \' $(pactl -- set-sink-volume PASINK -5% && pactl -- get-sink-volume 0 | grep -o \'[0-9]*%\' | head -1)" >>= flashText myTextConfig 1 . fromMaybe "")' $HOME/.xmonad/xmonad.hs
+        sed -i "s/PASINK/$SINK/" $HOME/.xmonad/xmonad.hs
     end
 end
 
