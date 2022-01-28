@@ -19,9 +19,10 @@ echo "17 Let QT & GTK use the KDE themes."
 echo "18 Make firefox the default browser."
 echo "19 Make DTOS scripts are executable."
 echo "20 Switch Adwaita to breeze_cursors."
+echo "21 Update alacritty opacity."
 echo "   ---------- OTHER CONFIG -----------"
-echo "21 Disable NaturalScrolling touchpad.conf."
-echo "22 Use pulseaudio for extended volume."
+echo "22 Disable NaturalScrolling touchpad.conf."
+echo "23 Use pulseaudio for extended volume."
 echo "   -------------- FONTS --------------"
 echo "30 Increase Xmobar font size."
 echo "31 Decrease Xmobar font size."
@@ -381,7 +382,18 @@ if [ $CHOICE -eq 20 ] || [ $CHOICE -eq 2 ]
     end
 end
 
-if [ $CHOICE -eq 21 ]
+if [ $CHOICE -eq 21 ] || [ $CHOICE -eq 2 ]
+    if [ -f $HOME/.config/alacritty/alacritty.yml ]
+        if grep -R "background_opacity" $HOME/.config/alacritty/alacritty.yml > /dev/null
+            echo "Updating Alacritty opacity."
+            sed -i 's/background_opacity/window.opacity/' $HOME/.config/alacritty/alacritty.yml
+        else
+            echo "Cool Alacritty already updated."
+        end
+    end
+end
+
+if [ $CHOICE -eq 22 ]
     # Disable NaturalScrolling direction.
     if [ -f /etc/X11/xorg.conf.d/30-touchpad.conf ]
         echo "Setting NaturalScrolling to false."
@@ -391,7 +403,7 @@ if [ $CHOICE -eq 21 ]
     end
 end
 
-if [ $CHOICE -eq 22 ]
+if [ $CHOICE -eq 23 ]
     # Switch alsa for pulseaudio keybindings.
 
     set SINK ( pactl list | grep -oP 'Sink #\K([0-9]+)' )
@@ -746,3 +758,4 @@ echo ""
 echo "Press any key to continue."
 read
 fish (status filename) && exit
+
