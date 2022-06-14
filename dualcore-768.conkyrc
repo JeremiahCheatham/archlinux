@@ -1,0 +1,145 @@
+--[[
+####################################
+##  doom-one-01.conkyrc (XMonad)  ##
+####################################
+]]
+
+conky.config = {
+
+	--Various settings
+	background = true, 							-- forked to background
+	cpu_avg_samples = 2,						-- The number of samples to average for CPU monitoring.
+	diskio_avg_samples = 10,					-- The number of samples to average for disk I/O monitoring.
+	double_buffer = true,						-- Use the Xdbe extension? (eliminates flicker)
+	if_up_strictness = 'address',				-- how strict if testing interface is up - up, link or address
+	net_avg_samples = 2,						-- The number of samples to average for net data
+	no_buffers = true,							-- Subtract (file system) buffers from used memory?
+	temperature_unit = 'celsius',			-- fahrenheit or celsius
+	text_buffer_size = 2048,					-- size of buffer for display of content of large variables - default 256
+	update_interval = 1,						-- update interval
+	imlib_cache_size = 0,                       -- disable image cache to get a new spotify cover per song
+
+	-- Placement (Conky on MIDDLE of THREE monitors at 1920x1080)
+	--alignment = 'top_left',		                -- top_left,top_middle,top_right,bottom_left,bottom_middle,bottom_right,
+	--gap_x = 3540,                               -- pixels between right or left border
+	--gap_y = 70,									-- pixels between bottom or left border
+
+    -- Placement (For SINGLE monitor users!)
+	alignment = 'top_right',		            -- top_left,top_middle,top_right,bottom_left,bottom_middle,bottom_right,
+	gap_x = 20,								-- pixels between right or left border
+	gap_y = 40,								-- pixels between bottom or left border
+
+    -- Size
+    minimum_height = 200,						-- minimum height of window
+	minimum_width = 260,						-- minimum width of window
+	maximum_width = 260,						-- maximum width of window
+
+	--Graphical
+	border_inner_margin = 5, 					-- margin between border and text
+	border_outer_margin = 5, 					-- margin between border and edge of window
+	border_width = 0, 							-- border width in pixels
+	default_bar_width = 260,					-- default is 0 - full width
+	default_bar_height = 10,					-- default is 6
+	default_gauge_height = 25,					-- default is 25
+	default_gauge_width =40,					-- default is 40
+	default_graph_height = 40,					-- default is 25
+	default_graph_width = 153,					-- default is 0 - full width
+	default_shade_color = '#000000',			-- default shading colour
+	default_outline_color = '#000000',			-- default outline colour
+	draw_borders = false,						-- draw borders around text
+	draw_graph_borders = true,					-- draw borders around graphs
+	draw_shades = false,						-- draw shades
+	draw_outline = false,						-- draw outline
+	stippled_borders = 0,						-- dashing the border
+
+	--Textual
+	format_human_readable = true,				-- KiB, MiB rather then number of bytes
+	font  = 'Noto Sans:bold:size=8',  	-- the default font used
+	font2 = 'Noto Sans:bold:size=28',         	-- font for the time
+	font3 = 'Noto Sans:size=11',               	-- font for the date
+	font4 = 'Noto Sans:bold:size=9',              -- font for the keybindings heading
+	max_text_width = 0,							-- 0 will make sure line does not get broken if width too smal
+	max_user_text = 16384,						-- max text in conky default 16384
+	override_utf8_locale = true,				-- force UTF8 requires xft
+	short_units = true,							-- shorten units from KiB to k
+	top_name_width = 21,						-- width for $top name value default 15
+	top_name_verbose = false,					-- If true, top name shows the full command line of  each  process - Default value is false.
+	uppercase = false,							-- uppercase or not
+	use_spacer = 'none',						-- adds spaces around certain objects to align - default none
+	use_xft = true,								-- xft font - anti-aliased font
+	xftalpha = 1,								-- alpha of the xft font - between 0-1
+
+	--Windows
+	own_window = true,							-- create your own window to draw
+	own_window_argb_value = 128,			    -- real transparency - composite manager required 0-255
+	own_window_argb_visual = true,				-- use ARGB - composite manager required
+	own_window_class = 'Conky',					-- manually set the WM_CLASS name for use with xprop
+	own_window_colour = '#000000',				-- set colour if own_window_transparent no
+	own_window_transparent = false,				-- if own_window_argb_visual is true sets background opacity 0%
+	own_window_title = 'xmonad_conky',			-- set the name manually
+	own_window_type = 'normal',				-- if own_window true options are: normal/override/dock/desktop/panel
+	own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',  -- if own_window true - just hints - own_window_type sets it
+
+	--Colors (Doom One)
+	color0 = '#c678dd',
+	color1 = '#bbc2cf',
+	color2 = '#51afef',
+	color3 = '#98be65',
+};
+
+
+conky.text = [[
+${alignc}${color0}${font2}${time %H:%M}${font}
+${alignc}${color0}${font3}${time %b %d, %Y}${font}${color}${font}
+# ##################### SYSTEM ######################
+${font4}${color3}${exec grep "^NAME" /etc/os-release | cut -d '"' -f 2} ${color1}${hr 2}${font}
+${color1}Uptime${alignr}${color}${uptime}
+${color1}Kernel${alignr}${color}${kernel}
+${color1}Architecture${alignr}${color}${machine}
+#${color1}Temperature${alignr}${color}${hwmon 1 temp 1} °C
+${color1}File System${alignr}${color}${fs_type}
+# ##################### BATTERY ######################
+${font4}${color3}Battery ${color1}${hr 2}${font}
+${color}${exec cat /sys/class/power_supply/AC/subsystem/BAT0/status}\
+${goto 115}${alignc}${color}${exec upower -i $(upower -e | grep -e "BAT") | grep -e "time to" | awk '{print $4,$5}'}\
+${alignr}${battery_percent BAT0} %
+${color2}${battery_bar 10,260 BAT0}
+# ####################### CPU ########################
+${font4}${color3}CPU ${color1}${hr 2}${font}
+${color}${hwmon 1 temp 1} °C\
+${alignc}${goto 119}${freq_g cpu0} Ghz\
+${alignr}${cpu cpu0} %
+${color2}${cpugraph 50,260}
+${cpubar cpu1 10,125}${offset 10}${cpubar cpu2 10,125}
+#${cpubar cpu3 10,125}${offset 10}${cpubar cpu4 10,125}
+#${cpubar cpu5 10,125}${offset 10}${cpubar cpu6 10,125}
+#${cpubar cpu7 10,125}${offset 10}${cpubar cpu8 10,125}
+#${cpubar cpu9 10,125}${offset 10}${cpubar cpu10 10,125}
+#${cpubar cpu11 10,125}${offset 10}${cpubar cpu12 10,125}
+#${cpubar cpu13 10,125}${offset 10}${cpubar cpu14 10,125}
+#${cpubar cpu15 10,125}${offset 10}${cpubar cpu16 10,125}
+# ##################### Memory ######################
+${font4}${color3}Memory ${color1}${hr 2}${font}
+${font}${color1}MEM ${alignc}${goto 102}${color}${mem} / ${memmax} ${alignr}${memperc} %
+${color2}${membar}
+${color1}SWAP${alignc}${goto 118}${color}${swap} / ${swapmax}${alignr}${swapperc} %
+${color2}${swapbar}
+# ###################### Storage #######################
+${font4}${color3}HDD / SSD ${color1}${hr 2}${font}
+${color1}/home${goto 102}${alignc}${color}${fs_used /home} / ${fs_size /home} $alignr ${fs_free_perc /home} %
+${color2}${fs_bar /home}
+# ################## Top Proccesses ###################
+${font4}${color3}Top Proccesses ${color1}${hr 2}${font}
+${color1}${top_mem name 1}${alignr}${color}${top mem 1} %
+${color1}${top_mem name 2}${alignr}${color}${top mem 2} %
+${color1}${top_mem name 3}${alignr}${color}${top mem 3} %
+${color1}${top_mem name 4}${alignr}${color}${top mem 4} %
+${color1}${top_mem name 5}${alignr}${color}${top mem 5} %
+# ##################### Network ########################
+${font4}${color3}Network ${color1}${hr 2}${font}
+${color1}IP on wlan0${alignr}${color}${addr wlan0}
+${color1}Down ${alignr}${color}${downspeed wlan0} kb/s
+${color1}Up ${alignr}${color}${upspeed wlan0} kb/s
+${color1}Downloaded: ${alignr}${color}${totaldown wlan0}
+${color1}Uploaded: ${alignr}${color}${totalup wlan0}
+]];
