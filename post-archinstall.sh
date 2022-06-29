@@ -15,11 +15,12 @@ sudo systemctl enable bluetooth
 sudo systemctl start bluetooth
 
 # Configure zram with lz4 compression and double ram size.
-sudo cat << EOF > /etc/systemd/zram-generator.conf
+sudo sh -c "cat << EOF > /etc/systemd/zram-generator.conf
 [zram0]
 compression-algorithm = lz4
 zram-size = ram * 2
 EOF
+"
 
 sudo systemctl restart systemd-zram-setup@zram0.service
 
